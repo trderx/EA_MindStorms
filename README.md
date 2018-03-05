@@ -1,7 +1,7 @@
 # EA MindStorms
 Modular EA Mql4
 
-Read more about the strategy here:
+Read more here:
 
 https://www.forexfactory.com/showthread.php?t=736275
 
