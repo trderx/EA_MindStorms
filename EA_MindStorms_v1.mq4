@@ -1,14 +1,16 @@
 //+-----------------------------------------------------------------+
-//|                                      LegoEA_MindStorms_v1.01.mq4 |
+//|                                      EA_MindStorms_v1.01.mq4 |
 //|                                      rodolfo.leonardo@gmail.com. |
 //+------------------------------------------------------------------+
-#property copyright " LegoEA_MindStorms_v1.01"
+#property copyright " EA_MindStorms_v1.01"
 #property link "rodolfo.leonardo@gmail.com"
 #property version "1.01"
-#property description "LegoEA_MindStorms_v1"
+#property description "EA_MindStorms_v1"
 #property description "This EA is 100% FREE "
 #property description "Coder: rodolfo.leonardo@gmail.com "
 #property strict
+
+
 
 extern string Version__ = "-----------------------------------------------------------------";
 extern string vg_versao = "            LegoEA_MindStorms_v1 2018-03-04  DEVELOPER EDITION             ";
