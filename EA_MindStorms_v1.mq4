@@ -108,13 +108,13 @@ void OnTick()
 
        // CloseThisSymbolAll(MACH2_MagicNumber,0);
        
-        MACHx(-1, false, MACH2_sumLots/MACH2_totalOrdensOpen);
+        MACHx(-1, false, 0.01);
 
         }
 
     if (SinalMA == 1){
         //CloseThisSymbolAll(MACH_MagicNumber,0);
-        MACH2x(1, false,MACH_sumLots/MACH_totalOrdensOpen);
+        MACH2x(1, false,0.01);
 
        }
 
