@@ -12,7 +12,7 @@ extern double MACH2_InpSlip = 3.0;        //Slip
 input double MACH2_InpMaxLot = 99;        // Max Lot
 
 extern string MACH2_Configgrid__ = "---------------------------GRID--------------------------------------";
-extern double MACH2_InpLotExponent = 1.2651;  // Grid Increment Factor
+extern double MACH2_InpLotExponent = 1.3;  // Grid Increment Factor
 extern bool MACH2_InpDynamicPips = true;      // Dynamic Grid
 extern int MACH2_InpStepSizeGridDefault = 12; // Step Size in Pips [Default if MACH2_InpDynamicPips true]
 extern int MACH2_InpGlubina = 24;             //Qtd Periodos p/ maxima e minima

@@ -13,7 +13,7 @@
 
 
 extern string Version__ = "-----------------------------------------------------------------";
-extern string vg_versao = "            LegoEA_MindStorms_v1 2018-03-04  DEVELOPER EDITION             ";
+extern string vg_versao = "            EA_MindStorms_v1 2018-03-04  DEVELOPER EDITION             ";
 extern string Version____ = "-----------------------------------------------------------------";
 
 #include "EAframework.mqh"
@@ -105,16 +105,18 @@ void OnTick()
     int SinalMA = GetSinalMA();
 
     if (SinalMA == -1){
+
        // CloseThisSymbolAll(MACH2_MagicNumber,0);
-        MACHx(-1, false, 0.01);
+       
+        MACHx(-1, false, MACH2_sumLots/MACH2_totalOrdensOpen);
 
         }
 
     if (SinalMA == 1){
         //CloseThisSymbolAll(MACH_MagicNumber,0);
-        MACH2x(1, false, 0.01);
+        MACH2x(1, false,MACH_sumLots/MACH_totalOrdensOpen);
 
-        }
+       }
 
     // SE TrailingStop  ENABLE
     if (InpUseTrailingStop)

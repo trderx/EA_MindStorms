@@ -12,12 +12,12 @@ extern double MACH_InpSlip = 3.0;        //Slip
 input double MACH_InpMaxLot = 99;        // Max Lot
 
 extern string MACH_Configgrid__ = "---------------------------GRID--------------------------------------";
-extern double MACH_InpLotExponent = 1.2651;  // Grid Increment Factor
+extern double MACH_InpLotExponent = 1.3;  // Grid Increment Factor
 extern bool MACH_InpDynamicPips = true;      // Dynamic Grid
 extern int MACH_InpStepSizeGridDefault = 12; // Step Size in Pips [Default if MACH_InpDynamicPips true]
 extern int MACH_InpGlubina = 24;             //Qtd Periodos p/ maxima e minima
 extern int MACH_InpDEL = 3;                  //Divizor de (maxima - minima) p/ calculo do tamanho do grid
-extern int MACH_InpMaxTrades = 21;           // Max Lot Open Simultaneo
+extern int MACH_InpMaxTrades = 99;           // Max Lot Open Simultaneo
 
 extern string MACH_FilterOpenOneCandle__ = "--------------------Filter One Order by Candle--------------";
 input bool MACH_InpOpenOneCandle = false;                        // Open one order by candle
