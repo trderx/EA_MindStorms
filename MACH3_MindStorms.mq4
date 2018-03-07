@@ -7,7 +7,7 @@
 #property version "1.01"
 #property description "MACH3_MindStorms_v1"
 #property description "This EA is 100% FREE "
-#property description "Strategy: When engine 1 MACHx triggers level 2, engine 2 MACHx starts when engine 2 MACHx triggers level 2, engine 3 MACHx starts"
+#property description "Strategy: When engine 1 MACHx triggers level 10, engine 2 MACHx starts when engine 2 MACHx triggers level 10, engine 3 MACHx starts"
 #property description "Coder: rodolfo.leonardo@gmail.com "
 #property strict
 
@@ -109,14 +109,14 @@ void OnTick()
      MACHx(SinalMA, false, 0.01);
 
 
-    if (MACH_orders_count > 2){
+    if (MACH_vg_cnt > 10 || MACH2_NumOfTrades >0 ){
      
-        MACH2x(SinalMA, false,0.01);
+        MACH2x(SinalMA, false,MACH_sumLots);
     }
 
-     if (MACH2_orders_count > 2){
+     if (MACH2_vg_cnt > 10 || MACH3_NumOfTrades >0){
      
-        MACH3x(SinalMA, false,0.01);
+        MACH3x(SinalMA, false,MACH2_sumLots);
     }
 
     // SE TrailingStop  ENABLE
