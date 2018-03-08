@@ -1,4 +1,5 @@
 extern string _BB1_ =                                     "-----------------------------Bollinger Bands--------------------";
+input bool EnableSinalBB    = false;                                         //Enable Sinal  Bollinger Bands
 input ENUM_TIMEFRAMES        InpBBFrame= PERIOD_M5;                                   // Bollinger Bands TimeFrame
 input int          InpperiodBB = 10;                                                    //averaging period
 input int          InpdeviationBB = 2;                                                  // standard deviations
@@ -8,8 +9,18 @@ extern int         InppriceBBDN  = PRICE_CLOSE;                                 
 input int          InpCheckBarsBB = 10;                                                 //Check Bars BB
 
 //-----------------------------------------------
+int DivSinalBB()
+{
+    if(!EnableSinalBB) return (0);
+    else return (1);
+}
+
+
 int GetSinalBB()
 {
+   if(!EnableSinalBB) return (0);
+
+
  double  bh, bl; int dn=0,up=0;
  int j;
  int ii=1;
