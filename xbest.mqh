@@ -26,7 +26,7 @@ input double               XBEST_InpPercentLot= 0.03;           // Percent Lot
 input double               XBEST_InpGridFactor= 1.1;            // Grid Increment Factor
 input int                  XBEST_InpHedge= 0;                   // Hedge After Level
 input int                  XBEST_InpDailyTarget= 50;             // Daily Target in Money
-input int                  XBEST_InpMaxLot = 99;                // Max Lot 
+input double                  XBEST_InpMaxLot = 99;                // Max Lot 
 input double               XBEST_MinProfit   = 30.00;     // Minimal Profit Close
 input int                  XBEST_QtdTradesMinProfit   = 10;     // Qtd Trades to Minimal Profit Close
 

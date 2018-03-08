@@ -16,6 +16,30 @@ double CalculateProfit(int MagicNumber) {
     }
     return (Profit);
 }
+
+
+
+
+   //------------------------------------------------------------------------------------
+   // GetTimeFrame()
+   //------------------------------------------------------------------------------------
+   string GetTimeFrame(int timePeriod)
+   {  
+      string timeframe="";
+      switch (timePeriod)
+      {
+         case 1: timeframe="M1";break;
+         case 5: timeframe="M5";break;
+         case 15: timeframe="M15";break;
+         case 30: timeframe="M30";break;
+         case 60: timeframe="H1";break;
+         case 240: timeframe="H4";break;
+         case 1440: timeframe="D1";break;
+         case 10080: timeframe="W1";break;
+      }
+      return timeframe;
+   }
+
 //+------------------------------------------------------------------+
 int OrdersScaner(int vMAGIC, int &orders_buy, int &orders_sell, int &profit, int &MinPriceBuy, int &MaxPriceSell, int &pending)
 {

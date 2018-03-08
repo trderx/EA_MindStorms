@@ -24,8 +24,9 @@ extern string Version____ = "---------------------------------------------------
 #include "TrailingStop.mqh"
 
 #include "SinalMA.mqh"
-//#include "SinalBB.mqh"
-//#include "SinalRSI.mqh"
+#include "SinalBB.mqh"
+#include "SinalRSI.mqh"
+#include "SinalNONLANG.mqh"
 
 #include "FFCallNews.mqh"
 #include "FilterTime.mqh"
@@ -104,19 +105,20 @@ void OnTick()
      || FilterStopOut(MACH2_CurrentPairProfit,MACH2_MagicNumber)
     ) return;
    
-    int SinalMA = GetSinalMA();
-
-     MACHx(SinalMA, false, 0.01);
+        int Sinal = (GetSinalMA() + GetSinalBB() + GetSinalRSI() + GetSinalNONLANG()) / ( DivSinalMA() + DivSinalBB()+ DivSinalRSI() +DivSinalNONLANG() ) ;
 
 
-    if (MACH_vg_cnt > 10 || MACH2_NumOfTrades >0 ){
+     MACHx(Sinal, false, 0.01);
+
+
+    if (MACH_vg_cnt > 5 || MACH2_NumOfTrades >0 ){
      
-        MACH2x(SinalMA, false,MACH_sumLots);
+        MACH2x(Sinal, false,MACH_sumLots);
     }
 
-     if (MACH2_vg_cnt > 10 || MACH3_NumOfTrades >0){
+     if (MACH2_vg_cnt > 5 || MACH3_NumOfTrades >0){
      
-        MACH3x(SinalMA, false,MACH2_sumLots);
+        MACH3x(Sinal, false,MACH2_sumLots);
     }
 
     // SE TrailingStop  ENABLE
