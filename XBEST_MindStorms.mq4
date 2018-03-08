@@ -23,6 +23,7 @@ extern string Version____ = "---------------------------------------------------
 #include "SinalMA.mqh"
 #include "SinalBB.mqh"
 #include "SinalRSI.mqh"
+#include "SinalNONLANG.mqh"
 
 #include "FFCallNews.mqh"
 #include "FilterTime.mqh"
@@ -100,7 +101,7 @@ void OnTick()
         return;
     }
  
-    int Sinal = (GetSinalMA() + GetSinalBB() + GetSinalRSI()) / ( DivSinalMA() + DivSinalBB()+ DivSinalRSI() ) ;
+    int Sinal = (GetSinalMA() + GetSinalBB() + GetSinalRSI() + GetSinalNONLANG()) / ( DivSinalMA() + DivSinalBB()+ DivSinalRSI() +DivSinalNONLANG() ) ;
 
     XBEST_OnTick(Sinal);
 
