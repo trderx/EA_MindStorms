@@ -19,11 +19,12 @@ extern string Version____ = "---------------------------------------------------
 #include "EAframework.mqh"
 #include "macx.mqh"
 #include "macx2.mqh"
+#include "xbest.mqh"
 #include "TrailingStop.mqh"
 
 #include "SinalMA.mqh"
-//#include "SinalBB.mqh"
-//#include "SinalRSI.mqh"
+#include "SinalBB.mqh"
+#include "SinalRSI.mqh"
 
 #include "FFCallNews.mqh"
 #include "FilterTime.mqh"
@@ -52,6 +53,8 @@ int OnInit()
     vg_initpainel = true;
 
     printf(vg_versao + " - INIT");
+
+    XBEST_OnInit();
 
     return (INIT_SUCCEEDED);
 }
@@ -102,21 +105,20 @@ void OnTick()
      || FilterStopOut(MACH2_CurrentPairProfit,MACH2_MagicNumber)
     ) return;
    
-    int SinalMA = GetSinalMA();
+    int Sinal = (GetSinalMA() + GetSinalBB() + GetSinalRSI()) / ( DivSinalMA() + DivSinalBB()+ DivSinalRSI() ) ;
 
-    if (SinalMA == -1){
 
-       // CloseThisSymbolAll(MACH2_MagicNumber,0);
-       
-        MACHx(-1, false, 0.01);
+ 
+     MACHx(Sinal, false, 0.01);
 
-        }
+     
 
-    if (SinalMA == 1){
-        //CloseThisSymbolAll(MACH_MagicNumber,0);
-        MACH2x(1, false,0.01);
+     XBEST_OnTick(Sinal);
 
-       }
+    // SE TrailingStop  ENABLE
+    if (InpUseTrailingStop)
+        TrailingAlls(InpTrailStart, InpTrailStep, XBEST_m_mediaprice1, XBEST_Magic);
+  
 
     // SE TrailingStop  ENABLE
     if (InpUseTrailingStop)
