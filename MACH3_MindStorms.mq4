@@ -11,8 +11,6 @@
 #property description "Coder: rodolfo.leonardo@gmail.com "
 #property strict
 
-
-
 extern string Version__ = "-----------------------------------------------------------------";
 extern string vg_versao = "           MACH3_MindStorms_v1 2018-03-07  DEVELOPER EDITION             ";
 extern string Version____ = "-----------------------------------------------------------------";
@@ -41,8 +39,6 @@ string vg_initpainel = false;
 
 extern string Filter_Spread__ = "----------------------------Filter Max Spread----------------";
 input int InpMaxvg_Spread = 24; // Max Spread
-
-
 
 //+------------------------------------------------------------------+
 //| Expert initialization function                                   |
@@ -101,24 +97,23 @@ void OnTick()
 
         return;
     }
-    if(FilterStopOut(MACH_CurrentPairProfit,MACH_MagicNumber)
-     || FilterStopOut(MACH2_CurrentPairProfit,MACH2_MagicNumber)
-    ) return;
-   
-        int Sinal = (GetSinalMA() + GetSinalBB() + GetSinalRSI() + GetSinalNONLANG()) / ( DivSinalMA() + DivSinalBB()+ DivSinalRSI() +DivSinalNONLANG() ) ;
+    if (FilterStopOut(MACH_CurrentPairProfit, MACH_MagicNumber) || FilterStopOut(MACH2_CurrentPairProfit, MACH2_MagicNumber))
+        return;
 
+    int Sinal = (GetSinalMA() + GetSinalBB() + GetSinalRSI() + GetSinalNONLANG()) / (DivSinalMA() + DivSinalBB() + DivSinalRSI() + DivSinalNONLANG());
 
-     MACHx(Sinal, false, 0.01);
+    MACHx(Sinal, false, 0.01);
 
+    if (MACH_vg_cnt > 5 || MACH2_NumOfTrades > 0)
+    {
 
-    if (MACH_vg_cnt > 5 || MACH2_NumOfTrades >0 ){
-     
-        MACH2x(Sinal, false,MACH_sumLots);
+        MACH2x(Sinal, false, MACH_sumLots);
     }
 
-     if (MACH2_vg_cnt > 5 || MACH3_NumOfTrades >0){
-     
-        MACH3x(Sinal, false,MACH2_sumLots);
+    if (MACH2_vg_cnt > 5 || MACH3_NumOfTrades > 0)
+    {
+
+        MACH3x(Sinal, false, MACH2_sumLots);
     }
 
     // SE TrailingStop  ENABLE
@@ -126,8 +121,4 @@ void OnTick()
         TrailingAlls(InpTrailStart, InpTrailStep, MACH_AveragePrice, MACH_MagicNumber);
     if (InpUseTrailingStop)
         TrailingAlls(InpTrailStart, InpTrailStep, MACH2_AveragePrice, MACH2_MagicNumber);
-
-        
-  
-
 }

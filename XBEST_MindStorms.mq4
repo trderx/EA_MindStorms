@@ -10,8 +10,6 @@
 #property description "Coder: rodolfo.leonardo@gmail.com "
 #property strict
 
-
-
 extern string Version__ = "-----------------------------------------------------------------";
 extern string vg_versao = "            XBEST_MindStorms_v1 2018-03-08  DEVELOPER EDITION             ";
 extern string Version____ = "-----------------------------------------------------------------";
@@ -38,8 +36,6 @@ string vg_initpainel = false;
 
 extern string Filter_Spread__ = "----------------------------Filter Max Spread----------------";
 input int InpMaxvg_Spread = 24; // Max Spread
-
-
 
 //+------------------------------------------------------------------+
 //| Expert initialization function                                   |
@@ -100,16 +96,12 @@ void OnTick()
 
         return;
     }
- 
-    int Sinal = (GetSinalMA() + GetSinalBB() + GetSinalRSI() + GetSinalNONLANG()) / ( DivSinalMA() + DivSinalBB()+ DivSinalRSI() +DivSinalNONLANG() ) ;
+
+    int Sinal = (GetSinalMA() + GetSinalBB() + GetSinalRSI() + GetSinalNONLANG()) / (DivSinalMA() + DivSinalBB() + DivSinalRSI() + DivSinalNONLANG());
 
     XBEST_OnTick(Sinal);
 
     // SE TrailingStop  ENABLE
     if (InpUseTrailingStop)
         TrailingAlls(InpTrailStart, InpTrailStep, XBEST_m_mediaprice1, XBEST_Magic);
-  
-        
-  
-
 }

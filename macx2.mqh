@@ -12,7 +12,7 @@ extern double MACH2_InpSlip = 3.0;        //Slip
 input double MACH2_InpMaxLot = 99;        // Max Lot
 
 extern string MACH2_Configgrid__ = "---------------------------GRID--------------------------------------";
-extern double MACH2_InpLotExponent = 1.3;  // Grid Increment Factor
+extern double MACH2_InpLotExponent = 1.3;     // Grid Increment Factor
 extern bool MACH2_InpDynamicPips = true;      // Dynamic Grid
 extern int MACH2_InpStepSizeGridDefault = 12; // Step Size in Pips [Default if MACH2_InpDynamicPips true]
 extern int MACH2_InpGlubina = 24;             //Qtd Periodos p/ maxima e minima
@@ -349,10 +349,10 @@ void MACH2x(int vSinal, bool LotInformado, double Lots)
     }
 
     if (BuyProfit >= MACH2_MinProfit && buyer_counter >= MACH2_QtdTradesMinProfit)
-        CloseAllTicket(OP_BUY, buy_ticket, MACH2_MagicNumber,3);
+        CloseAllTicket(OP_BUY, buy_ticket, MACH2_MagicNumber, 3);
 
     if (SellProfit >= MACH2_MinProfit && seller_counter >= MACH2_QtdTradesMinProfit)
-        CloseAllTicket(OP_SELL, sell_ticket, MACH2_MagicNumber,3);
+        CloseAllTicket(OP_SELL, sell_ticket, MACH2_MagicNumber, 3);
 
     if (MACH2_totalOrdensOpen > 0)
         MACH2_AveragePrice = NormalizeDouble(MACH2_AveragePrice / Count, Digits);

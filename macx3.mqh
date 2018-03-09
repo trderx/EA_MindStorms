@@ -12,7 +12,7 @@ extern double MACH3_InpSlip = 3.0;        //Slip
 input double MACH3_InpMaxLot = 99;        // Max Lot
 
 extern string MACH3_Configgrid__ = "---------------------------GRID--------------------------------------";
-extern double MACH3_InpLotExponent = 1.3;  // Grid Increment Factor
+extern double MACH3_InpLotExponent = 1.3;     // Grid Increment Factor
 extern bool MACH3_InpDynamicPips = true;      // Dynamic Grid
 extern int MACH3_InpStepSizeGridDefault = 12; // Step Size in Pips [Default if MACH3_InpDynamicPips true]
 extern int MACH3_InpGlubina = 24;             //Qtd Periodos p/ maxima e minima
@@ -349,10 +349,10 @@ void MACH3x(int vSinal, bool LotInformado, double Lots)
     }
 
     if (BuyProfit >= MACH3_MinProfit && buyer_counter >= MACH3_QtdTradesMinProfit)
-        CloseAllTicket(OP_BUY, buy_ticket, MACH3_MagicNumber,3);
+        CloseAllTicket(OP_BUY, buy_ticket, MACH3_MagicNumber, 3);
 
     if (SellProfit >= MACH3_MinProfit && seller_counter >= MACH3_QtdTradesMinProfit)
-        CloseAllTicket(OP_SELL, sell_ticket, MACH3_MagicNumber,3);
+        CloseAllTicket(OP_SELL, sell_ticket, MACH3_MagicNumber, 3);
 
     if (MACH3_totalOrdensOpen > 0)
         MACH3_AveragePrice = NormalizeDouble(MACH3_AveragePrice / Count, Digits);

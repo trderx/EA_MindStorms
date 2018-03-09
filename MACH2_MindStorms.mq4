@@ -11,8 +11,6 @@
 #property description "Coder: rodolfo.leonardo@gmail.com "
 #property strict
 
-
-
 extern string Version__ = "-----------------------------------------------------------------";
 extern string vg_versao = "            EA_MindStorms_v1 2018-03-04  DEVELOPER EDITION             ";
 extern string Version____ = "-----------------------------------------------------------------";
@@ -39,8 +37,6 @@ string vg_initpainel = false;
 
 extern string Filter_Spread__ = "----------------------------Filter Max Spread----------------";
 input int InpMaxvg_Spread = 24; // Max Spread
-
-
 
 //+------------------------------------------------------------------+
 //| Expert initialization function                                   |
@@ -99,33 +95,28 @@ void OnTick()
 
         return;
     }
-    if(FilterStopOut(MACH_CurrentPairProfit,MACH_MagicNumber)
-     || FilterStopOut(MACH2_CurrentPairProfit,MACH2_MagicNumber)
-    ) return;
-   
+    if (FilterStopOut(MACH_CurrentPairProfit, MACH_MagicNumber) || FilterStopOut(MACH2_CurrentPairProfit, MACH2_MagicNumber))
+        return;
+
     int SinalMA = GetSinalMA();
 
-    if (SinalMA == -1){
+    if (SinalMA == -1)
+    {
 
-       // CloseThisSymbolAll(MACH2_MagicNumber,0);
-       
+        // CloseThisSymbolAll(MACH2_MagicNumber,0);
+
         MACHx(-1, false, 0.01);
+    }
 
-        }
-
-    if (SinalMA == 1){
+    if (SinalMA == 1)
+    {
         //CloseThisSymbolAll(MACH_MagicNumber,0);
-        MACH2x(1, false,0.01);
-
-       }
+        MACH2x(1, false, 0.01);
+    }
 
     // SE TrailingStop  ENABLE
     if (InpUseTrailingStop)
         TrailingAlls(InpTrailStart, InpTrailStep, MACH_AveragePrice, MACH_MagicNumber);
     if (InpUseTrailingStop)
         TrailingAlls(InpTrailStart, InpTrailStep, MACH2_AveragePrice, MACH2_MagicNumber);
-
-        
-  
-
 }
