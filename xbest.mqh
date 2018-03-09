@@ -14,14 +14,19 @@ extern string XBEST_Version2__ = "----------------------------------------------
 extern string XBEST_Magic = "--------XBEST_Magic Number Engine---------";
 input bool XBEST_InpEnableEngineA = false; // Enable Engine
 input int XBEST_InpMagic = 7799;           // XBEST_Magic Number
+input ENUM_Trade TypeOrders     = All_Trade;
 
-extern string XBEST_Config__ = "---------------------------Config--------------------------------------";
-input int XBEST_InpGridSize = 3;                         // Step Size in Pips
-input int XBEST_InpTakeProfit = 3;                       // Take Profit in Pips
-input ENUM_LOT_MODE XBEST_InpLotMode = LOT_MODE_PERCENT; // Lot Mode
+input ENUM_LOT_MODE XBEST_InpLotMode = LOT_MODE_PERCENT; // Lot Init Mode
 input double XBEST_InpFixedLot = 0.01;                   // Fixed Lot
 input double XBEST_InpPercentLot = 0.03;                 // Percent Lot
-input double XBEST_InpGridFactor = 1.1;                  // Grid Increment Factor
+
+extern string XBEST_ConfigGrid__ = "---------------------------Config Grid--------------------------------------";
+input int XBEST_InpGridSize = 3;                         // Step Size in Pips
+input int XBEST_InpTakeProfit = 3;                       // Take Profit in Pips
+input double XBEST_InpGridFactor = 1.1;                  // Grid Increment Factor (If Martingale)
+input ENUM_TYPE_GRID_LOT  TypeGridLot     = Martingale;     // Type Grid Lot
+
+extern string XBEST_Config__ = "---------------------------Config--------------------------------------";
 input int XBEST_InpHedge = 0;                            // Hedge After Level
 input int XBEST_InpDailyTarget = 50;                     // Daily Target in Money
 input double XBEST_InpMaxLot = 99;                       // Max Lot
@@ -118,7 +123,7 @@ void xBest(string Id, int Sinal, double LotsHedge, int vXBEST_InpMagic, int &m_o
   double orders_profit = 0.0, level = 0.0;
   double buyer_lots = 0.0, seller_lots = 0.0;
   double buyer_sum = 0.0, seller_sum = 0.0;
-  double buy_price = 0.0, sell_price = 0.0;
+  double buy_price = 0.0, sell_price = 0.0, sell_lot = 0, buy_lot = 0;
   double bid_price = Bid, ask_price = Ask;
   double close_price = iClose(NULL, 0, 0);
   double open_price = iOpen(NULL, 0, 0);
@@ -177,6 +182,7 @@ void xBest(string Id, int Sinal, double LotsHedge, int vXBEST_InpMagic, int &m_o
       {
         buy_price = order_open_price;
         buy_ticket = order_ticket;
+        buy_lot = order_lots;
       }
       buyer_sum += (order_open_price + m_spread) * order_lots;
 
@@ -195,6 +201,7 @@ void xBest(string Id, int Sinal, double LotsHedge, int vXBEST_InpMagic, int &m_o
       {
         sell_price = order_open_price;
         sell_ticket = order_ticket;
+        sell_lot = order_lots;
       }
       seller_sum += (order_open_price - m_spread) * order_lots;
 
@@ -306,7 +313,13 @@ void xBest(string Id, int Sinal, double LotsHedge, int vXBEST_InpMagic, int &m_o
   }
   else
   {
-    lots = MathRound(lots * MathPow(XBEST_InpGridFactor, orders_count), volume_step);
+    //lots = MathRound(lots * MathPow(XBEST_InpGridFactor, orders_count), volume_step);
+     double qtdLots = (sell_lot + buy_lot);
+     if (long_condition)
+      lots = MathRound(CalcLot(TypeGridLot, OP_BUY, orders_count, qtdLots, lots,XBEST_InpGridFactor) , volume_step);
+    if (short_condition)
+      lots = MathRound(CalcLot(TypeGridLot, OP_SELL, orders_count, qtdLots, lots, XBEST_InpGridFactor) , volume_step);
+
     if (m_hedging)
     {
       if (long_condition)
@@ -326,10 +339,11 @@ void xBest(string Id, int Sinal, double LotsHedge, int vXBEST_InpMagic, int &m_o
   if (!XBEST_InpOpenOneCandle || (XBEST_InpOpenOneCandle && vDatetimeUltCandleOpen != iTime(NULL, XBEST_InpTimeframeBarOpen, 0)))
   {
     vDatetimeUltCandleOpen = iTime(NULL, XBEST_InpTimeframeBarOpen, 0);
-    if (long_condition)
+    if (long_condition &&   (TypeOrders==Only_BUY || TypeOrders==All_Trade))
     {
       if (buyer_lots + lots == seller_lots)
         lots = seller_lots + volume_min;
+
       ticket = XBEST_OpenTrade(OP_BUY, lots, ask_price, vXBEST_InpMagic, Id);
       if (ticket > 0)
       {
@@ -338,10 +352,12 @@ void xBest(string Id, int Sinal, double LotsHedge, int vXBEST_InpMagic, int &m_o
         buyer_sum += order_open_price * lots;
         buyer_lots += lots;
         m_level = NormalizeDouble((buyer_sum - seller_sum) / (buyer_lots - seller_lots), Digits) + m_take;
+        
         if (!m_hedging)
           level = m_level;
         else
           level = m_level + m_take;
+
         if (buyer_counter == 0)
           m_buyer = order_open_price;
         m_direction = 1;
@@ -349,7 +365,7 @@ void xBest(string Id, int Sinal, double LotsHedge, int vXBEST_InpMagic, int &m_o
       }
     }
 
-    if (short_condition)
+    if (short_condition  &&   (TypeOrders==Only_SELL || TypeOrders==All_Trade))
     {
       if (seller_lots + lots == buyer_lots)
         lots = buyer_lots + volume_min;

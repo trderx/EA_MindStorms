@@ -476,5 +476,51 @@ enum ENUM_Trade
   {
    Only_BUY,   // Only BUY
    Only_SELL,  // Only SELL
-   Only_All    // BUY and SELL
+   All_Trade    // BUY and SELL
   };
+
+  double CalcLot(int TypeLot, int TypeOrder, int vQtdTrades, double LastLot, double StartLot, double GridFactor)
+  {
+    double rezult = 0;
+    switch (TypeLot)
+    {
+    case 0: // Standart lot
+      if (TypeOrder == OP_BUY || TypeOrder == OP_SELL)
+        rezult = StartLot;
+      break;
+
+    case 1: // Summ lot
+      rezult = StartLot * vQtdTrades;
+      // if(TypeOrder==OP_BUY && Ask < BuyMinPrice  ) rezult=BuyMinLot+StartLot;
+      // if(TypeOrder==OP_BUY && Ask > BuyMaxPrice  ) rezult=StartLot;
+
+      //if(TypeOrder==OP_SELL&& Bid > SellMaxPrice ) rezult=SellMaxLot+StartLot;
+      //if(TypeOrder==OP_SELL&& Bid < SellMinPrice ) rezult=StartLot;
+      break;
+
+    case 2: // Martingale lot
+      rezult = StartLot * MathPow(GridFactor, vQtdTrades);
+      // if(TypeOrder==OP_BUY && Ask < BuyMinPrice  ) rezult=BuyMinLot*GridFactor;
+      // if(TypeOrder==OP_BUY && Ask > BuyMaxPrice  ) rezult=StartLot;
+
+      //if(TypeOrder==OP_SELL&& Bid > SellMaxPrice ) rezult=SellMaxLot*GridFactor;
+      //if(TypeOrder==OP_SELL&& Bid < SellMinPrice ) rezult=StartLot;
+      break;
+
+    case 3: // Step lot
+      if (vQtdTrades == 0)
+        rezult = StartLot;
+      if (vQtdTrades % 3 == 0)
+        rezult = LastLot + StartLot;
+      else
+        rezult = LastLot;
+
+      // if(TypeOrder==OP_BUY && Ask < BuyMinPrice && vQtdTrades%3==0 ) rezult=BuyMinLot+StartLot;
+      // if(TypeOrder==OP_BUY && Ask > BuyMaxPrice  ) rezult=StartLot;
+
+      // if(TypeOrder==OP_SELL&& Bid > SellMaxPrice && vQtdTrades%3==0) rezult=SellMaxLot+StartLot;
+      // if(TypeOrder==OP_SELL&& Bid < SellMinPrice ) rezult=StartLot;
+      break;
+    }
+    return rezult;
+  }
