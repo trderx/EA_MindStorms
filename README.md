@@ -1,7 +1,7 @@
 # EA MindStorms
 Modular EA Mql4
 
-![alt text](https://www.generationrobots.com/blog/wp-content/uploads/2015/02/LEGO.-MINDSTORMS.PROJECTS.22.png)
+![alt text](https://www.pro-linux.de/images/NB3/imgdb/lego-mindstorms-ev3-modelle.jpg)
 
 Read more here:
 
