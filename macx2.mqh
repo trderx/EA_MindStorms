@@ -11,7 +11,7 @@ extern double MACH2_InpSlip = 3.0;        //Slip
 input double MACH2_InpMaxLot = 99;        // Max Lot
 
 extern string MACH2_Configgrid__ = "---------------------------GRID--------------------------------------";
-input ENUM_TYPE_GRID_LOT MACH2_TypeGridLot = Summ_lot; // Type Grid Lot
+input ENUM_TYPE_GRID_LOT MACH2_TypeGridLot = Step_lot; // Type Grid Lot
 extern double MACH2_InpLotExponent = 1.3;                // Grid Increment Factor (If Martingale)
 extern bool MACH2_InpDynamicSizeGrid = true;             // Dynamic Size Grid
 extern int MACH2_InpStepSizeGridDefault = 12;            // Step Size in Pips [Default if MACH2_InpDynamicSizeGrid true]
