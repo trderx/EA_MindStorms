@@ -1,4 +1,11 @@
-
+//"xBest  v2.22 - Grid Hedging Expert Advisor"
+// "================================================================"
+//"This Engine init a cycle of buy or sell depending of signaling, it start with the base"
+// "lot and increase the size at every step by its factor and set a global take profit,"
+//"if daily target profit is hit then close all orders, also have a time filtering,"
+//"you can enable hedging after especified quantity of loss orders."
+// "Coder: xJhamil, Mail: yamilhurtado@gmail.com"
+// "Alter: Rmorais, Mail: rodolfo.leonardo@gmail.com"
 
 enum ENUM_LOT_MODE
 {
@@ -12,30 +19,40 @@ extern string XBEST_Version1__ = "-----------------xBest   EA  -----------------
 extern string XBEST_Version2__ = "----------------------------------------------------------------";
 
 extern string XBEST_Magic = "--------XBEST_Magic Number Engine---------";
-input bool XBEST_InpEnableEngineA = false; // Enable Engine
+input bool XBEST_InpEnableEngineA = true; // Enable Engine
 input int XBEST_InpMagic = 7799;           // XBEST_Magic Number
-input ENUM_Trade TypeOrders     = All_Trade;
+input ENUM_Trade TypeOrders = All_Trade;
 
 input ENUM_LOT_MODE XBEST_InpLotMode = LOT_MODE_PERCENT; // Lot Init Mode
 input double XBEST_InpFixedLot = 0.01;                   // Fixed Lot
 input double XBEST_InpPercentLot = 0.03;                 // Percent Lot
 
 extern string XBEST_ConfigGrid__ = "---------------------------Config Grid--------------------------------------";
-input int XBEST_InpGridSize = 3;                         // Step Size in Pips
-input int XBEST_InpTakeProfit = 3;                       // Take Profit in Pips
-input double XBEST_InpGridFactor = 1.1;                  // Grid Increment Factor (If Martingale)
-input ENUM_TYPE_GRID_LOT  TypeGridLot     = Martingale;     // Type Grid Lot
+input ENUM_TYPE_GRID_LOT TypeGridLot = Step_lot;  // Type Grid Lot
+input int XBEST_InpGridSize = 3;                   // Step Size in Pips
+input int XBEST_InpTakeProfit = 3;                 // Take Profit in Pips
+input double XBEST_InpGridFactor = 1.1;            // (If Martingale) Grid Increment Factor 
+input int XBEST_InpGridStepLot = 3;                // (If  Step Lot) Level to Change STEP LOT 
+extern double XBEST_InpStepLot = 0.01;             // (If  Step Lot) STEP LOT 
+input double XBEST_InpMaxLot = 0.1;                // Max Lot
+
+input double XBEST_MinProfit = 30.00;    // Minimal Profit Close
+input int XBEST_QtdTradesMinProfit = 2; // Qtd Level to Minimal Profit Close
 
 extern string XBEST_Config__ = "---------------------------Config--------------------------------------";
-input int XBEST_InpHedge = 0;                            // Hedge After Level
-input int XBEST_InpDailyTarget = 50;                     // Daily Target in Money
-input double XBEST_InpMaxLot = 99;                       // Max Lot
-input double XBEST_MinProfit = 30.00;                    // Minimal Profit Close
-input int XBEST_QtdTradesMinProfit = 10;                 // Qtd Trades to Minimal Profit Close
+ int XBEST_InpHedge = 0;            // Hedge After Level
+input int XBEST_InpDailyTarget = 50;     // Daily Target in Money
+
 
 extern string XBEST_FilterOpenOneCandle__ = "--------------------Filter One Order by Candle--------------";
 input bool XBEST_InpOpenOneCandle = true;                         // Open one order by candle
 input ENUM_TIMEFRAMES XBEST_InpTimeframeBarOpen = PERIOD_CURRENT; // Timeframe OpenOneCandle
+
+
+extern string XBEST_EquityCaution__ = "------------------------Filter Caution of Equity ---------------";
+extern bool XBEST_InpUseEquityCaution = TRUE;                       //  EquityCaution?
+extern double XBEST_InpTotalEquityRiskCaution = 20;                 // Total % Risk to EquityCaution
+extern ENUM_TIMEFRAMES XBEST_InpTimeframeEquityCaution = PERIOD_D1; // Timeframe as EquityCaution
 
 //LOT_MODE_FIXED
 //---
@@ -43,23 +60,31 @@ int XBEST_SlipPage = 3;
 int XBEST_Spread = 2.0;
 //---
 
-bool XBEST_m_hedging1, XBEST_m_target_filter1;
+bool XBEST_m_hedging1, XBEST_m_target_filter1, XBEST_m_initpainel;
 int XBEST_m_direction1, XBEST_m_current_day1, XBEST_m_previous_day1;
 double XBEST_m_level1, XBEST_m_buyer1, XBEST_m_seller1, XBEST_m_target1, XBEST_m_profit1;
-double XBEST_m_pip1, XBEST_m_size1, XBEST_m_take1, XBEST_m_spread1;
-datetime XBEST_m_datetime_ultcandleopen1;
-datetime XBEST_m_time_equityrisk1;
-double XBEST_m_mediaprice1;
-int XBEST_m_orders_count1;
-double XBEST_m_lastlot1;
+double XBEST_m_pip1, XBEST_m_size1, XBEST_m_take1, XBEST_m_spread1, XBEST_m_mediaprice1, XBEST_m_lastlot1;
+datetime XBEST_m_datetime_ultcandleopen1, XBEST_m_time_equityrisk1, vXBEST_m_time_equityrisk;
 
+int XBEST_m_orders_count1, XBEST_m_spreadX;
 string XBEST_m_symbol;
-bool XBEST_m_news_time;
-int XBEST_m_spreadX;
-bool XBEST_m_initpainel;
+
 string XBEST_m_filters_on;
-double XBEST_m_profit_all;
-datetime XBEST_m_time_equityriskstopall;
+
+string  DebugxBest()
+{
+  string vg_Debug = "";
+  vg_Debug = vg_Debug + "=========== XBEST ============\n";
+  vg_Debug = vg_Debug + "[ XBEST_m_hedging1, XBEST_m_target_filter1;XBEST_m_initpainel] [" + XBEST_m_hedging1 + "/" + XBEST_m_target_filter1 + "/" + XBEST_m_initpainel + "] \n";
+  vg_Debug = vg_Debug + "[ XBEST_m_direction1, XBEST_m_current_day1, XBEST_m_previous_day1;] [" + XBEST_m_direction1 + "/" + XBEST_m_current_day1 + "/" + XBEST_m_previous_day1 + "] \n";
+  vg_Debug = vg_Debug + "[ XBEST_m_level1, XBEST_m_buyer1, XBEST_m_seller1, XBEST_m_target1, XBEST_m_profit1;] [" + XBEST_m_level1 + "/" + XBEST_m_buyer1 + "/" + XBEST_m_seller1 + "/" + XBEST_m_target1 + "/" + XBEST_m_profit1 + "] \n";
+  vg_Debug = vg_Debug + "[ XBEST_m_pip1, XBEST_m_size1, XBEST_m_take1, XBEST_m_spread1; XBEST_m_mediaprice1, XBEST_m_lastlot1] [" + XBEST_m_pip1 + "/" + XBEST_m_size1 + "/" + XBEST_m_take1 + "/" + XBEST_m_spread1 + "/" + XBEST_m_mediaprice1 + "/" + XBEST_m_lastlot1 + "] \n";
+  vg_Debug = vg_Debug + "[XBEST_m_datetime_ultcandleopen1, XBEST_m_time_equityrisk1;vXBEST_m_time_equityrisk] [" + XBEST_m_datetime_ultcandleopen1 + "/" + XBEST_m_time_equityrisk1 + "/" + vXBEST_m_time_equityrisk + "] \n";
+  vg_Debug = vg_Debug + "[XBEST_m_orders_count1, XBEST_m_spreadX; ] [" + XBEST_m_orders_count1 + "/" + XBEST_m_spreadX + "] \n";
+
+  return vg_Debug;
+}
+
 //+------------------------------------------------------------------+
 //| Expert initialization function                                   |
 //+------------------------------------------------------------------+
@@ -93,7 +118,7 @@ int XBEST_OnInit()
 //+------------------------------------------------------------------+
 void XBEST_OnTick(int Sinal)
 {
-
+  if(XBEST_InpEnableEngineA)
   xBest("S", Sinal, XBEST_InpHedge, XBEST_InpMagic, XBEST_m_orders_count1, XBEST_m_mediaprice1, XBEST_m_hedging1, XBEST_m_target_filter1,
         XBEST_m_direction1, XBEST_m_current_day1, XBEST_m_previous_day1, XBEST_m_level1, XBEST_m_buyer1, XBEST_m_seller1,
         XBEST_m_target1, XBEST_m_profit1, XBEST_m_pip1, XBEST_m_size1, XBEST_m_take1, XBEST_m_spread1, XBEST_m_datetime_ultcandleopen1,
@@ -108,6 +133,14 @@ void xBest(string Id, int Sinal, double LotsHedge, int vXBEST_InpMagic, int &m_o
            double &m_pip, double &m_size, double &m_take, double &m_spread, datetime &vDatetimeUltCandleOpen,
            datetime &m_time_equityrisk)
 {
+
+  //FILTER EquityCaution
+  if (XBEST_m_orders_count1 == 0)
+    XBEST_m_time_equityrisk1 = -1;
+  if (XBEST_m_time_equityrisk1 == iTime(NULL, XBEST_InpTimeframeEquityCaution, 0))
+  {
+    vg_filters_on += "Filter XBEST EquityCaution S ON \n";
+  }
 
   //--- Variable Declaration
   int index, orders_total, order_ticket, order_type, ticket, hour;
@@ -259,7 +292,7 @@ void xBest(string Id, int Sinal, double LotsHedge, int vXBEST_InpMagic, int &m_o
     else
     {
       hour = TimeHour(time_current);
-      if (!InpUtilizeTimeFilter || (InpUtilizeTimeFilter && TimeFilter()))
+      if (!TimeFilter())
       {
 
         if (Sinal == 1)
@@ -278,14 +311,16 @@ void xBest(string Id, int Sinal, double LotsHedge, int vXBEST_InpMagic, int &m_o
   }
 
   // CONTROL DRAWDOWN
-  //double vProfit=XBEST_CalculateProfit(vXBEST_InpMagic);
+  double vProfit = XBEST_CalculateProfit(vXBEST_InpMagic);
 
-  // if(vProfit<0.0 && MathAbs(vProfit)>InpTotalEquityRiskCaution/100.0*AccountEquity())
-  // {
-  //  m_time_equityrisk=iTime(NULL,InpTimeframeEquityCaution,0);
-  //   } else {
-  // m_time_equityrisk=-1;
-  // }
+  if (vProfit < 0.0 && MathAbs(vProfit) > XBEST_InpTotalEquityRiskCaution / 100.0 * AccountEquity())
+  {
+    vXBEST_m_time_equityrisk = iTime(NULL, XBEST_InpTimeframeEquityCaution, 0);
+  }
+  else
+  {
+    vXBEST_m_time_equityrisk = -1;
+  }
 
   //--- Hedging
   if (XBEST_InpHedge > 0 && !m_hedging)
@@ -314,11 +349,11 @@ void xBest(string Id, int Sinal, double LotsHedge, int vXBEST_InpMagic, int &m_o
   else
   {
     //lots = MathRound(lots * MathPow(XBEST_InpGridFactor, orders_count), volume_step);
-     double qtdLots = (sell_lot + buy_lot);
-     if (long_condition)
-      lots = MathRound(CalcLot(TypeGridLot, OP_BUY, orders_count, qtdLots, lots,XBEST_InpGridFactor) , volume_step);
+    double qtdLots = (sell_lot + buy_lot);
+    if (long_condition)
+      lots = MathRound(CalcLot(TypeGridLot, OP_BUY, orders_count, qtdLots, lots, XBEST_InpGridFactor, XBEST_InpGridStepLot, XBEST_InpStepLot), volume_step);
     if (short_condition)
-      lots = MathRound(CalcLot(TypeGridLot, OP_SELL, orders_count, qtdLots, lots, XBEST_InpGridFactor) , volume_step);
+      lots = MathRound(CalcLot(TypeGridLot, OP_SELL, orders_count, qtdLots, lots, XBEST_InpGridFactor, XBEST_InpGridStepLot, XBEST_InpStepLot), volume_step);
 
     if (m_hedging)
     {
@@ -339,7 +374,7 @@ void xBest(string Id, int Sinal, double LotsHedge, int vXBEST_InpMagic, int &m_o
   if (!XBEST_InpOpenOneCandle || (XBEST_InpOpenOneCandle && vDatetimeUltCandleOpen != iTime(NULL, XBEST_InpTimeframeBarOpen, 0)))
   {
     vDatetimeUltCandleOpen = iTime(NULL, XBEST_InpTimeframeBarOpen, 0);
-    if (long_condition &&   (TypeOrders==Only_BUY || TypeOrders==All_Trade))
+    if (long_condition && (TypeOrders == Only_BUY || TypeOrders == All_Trade))
     {
       if (buyer_lots + lots == seller_lots)
         lots = seller_lots + volume_min;
@@ -352,7 +387,7 @@ void xBest(string Id, int Sinal, double LotsHedge, int vXBEST_InpMagic, int &m_o
         buyer_sum += order_open_price * lots;
         buyer_lots += lots;
         m_level = NormalizeDouble((buyer_sum - seller_sum) / (buyer_lots - seller_lots), Digits) + m_take;
-        
+
         if (!m_hedging)
           level = m_level;
         else
@@ -365,7 +400,7 @@ void xBest(string Id, int Sinal, double LotsHedge, int vXBEST_InpMagic, int &m_o
       }
     }
 
-    if (short_condition  &&   (TypeOrders==Only_SELL || TypeOrders==All_Trade))
+    if (short_condition && (TypeOrders == Only_SELL || TypeOrders == All_Trade))
     {
       if (seller_lots + lots == buyer_lots)
         lots = buyer_lots + volume_min;

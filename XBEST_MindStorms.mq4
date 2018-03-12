@@ -1,7 +1,14 @@
-//+-----------------------------------------------------------------+
-//|                                      EA_MindStorms_v1.01.mq4 |
-//|                                      rodolfo.leonardo@gmail.com. |
-//+------------------------------------------------------------------+
+//             P L E A S E   -   D O    N O T    D E L E T E    A N Y T H I N G ! ! !
+// -------------------------------------------------------------------------------------------------
+//                                       XBEST_MindStorms 
+//
+//                       				  	  by Rodolfo
+//                             rodolfo.leonardo@gmail.com
+//
+//--------------------------------------------------------------------------------------------------
+//   THIS EA IS 100 % FREE OPENSOURCE, WHICH MEANS THAT IT'S NOT A COMMERCIAL PRODUCT
+// -------------------------------------------------------------------------------------------------
+
 #property copyright " XBEST_MindStorms_v1.01"
 #property link "rodolfo.leonardo@gmail.com"
 #property version "1.01"
@@ -11,7 +18,7 @@
 #property strict
 
 extern string Version__ = "-----------------------------------------------------------------";
-extern string vg_versao = "            XBEST_MindStorms_v1 2018-03-08  DEVELOPER EDITION             ";
+extern string vg_versao = "        XBEST_MindStorms_v1.01 2018-03-11  DEVELOPER EDITION             ";
 extern string Version____ = "-----------------------------------------------------------------";
 
 #include "EAframework.mqh"
@@ -21,10 +28,13 @@ extern string Version____ = "---------------------------------------------------
 #include "SinalMA.mqh"
 #include "SinalBB.mqh"
 #include "SinalRSI.mqh"
-#include "SinalNONLANG.mqh"
+#include "SinalHILO.mqh"
+//#include "SinalNONLANG.mqh"
 
 #include "FFCallNews.mqh"
 #include "FilterTime.mqh"
+#include "FilterVolatility.mqh"
+#include "FilterMarginLevel.mqh"
 //#include "FilterStopOut.mqh"
 
 double vg_Spread = 0;
@@ -66,14 +76,16 @@ void OnDeinit(const int reason)
 //+------------------------------------------------------------------+
 void OnTick()
 {
-
+    Comment(vg_filters_on);
+    vg_filters_on = "";
+    //Comment(DebugFilterVolatility());
     PainelUPER(vg_versao);
     RefreshRates();
 
     //FILTER SPREAD
     if (vg_Spread > InpMaxvg_Spread)
     {
-        vg_filters_on += "Filter InpMaxvg_Spread ON \n";
+        vg_filters_on += "Filter Max_Spread ON \n";
         return;
     }
 
@@ -88,16 +100,33 @@ void OnTick()
             return;
         }
     }
-
+     
     //FILTER DATETIME
-    if (InpUtilizeTimeFilter && !TimeFilter())
+    if (TimeFilter() )
     {
+   
         vg_filters_on += "Filter TimeFilter ON \n";
 
         return;
     }
 
-    int Sinal = (GetSinalMA() + GetSinalBB() + GetSinalRSI() + GetSinalNONLANG()) / (DivSinalMA() + DivSinalBB() + DivSinalRSI() + DivSinalNONLANG());
+    //FILTER Volatility
+    if (FilterVolatility())
+    {
+        vg_filters_on += "Filter Volatility ON \n";
+
+        return;
+    }
+
+     //FILTER MarginLevel
+    if (FilterMargiLevel())
+    {
+        vg_filters_on += "Filter MarginLevel ON \n";
+
+        return;
+    }
+  
+    int Sinal = (GetSinalMA() + GetSinalBB() + GetSinalRSI() + GetSinalHILO()) / (DivSinalMA() + DivSinalBB() + DivSinalRSI()+ DivSinalHILO());
 
     XBEST_OnTick(Sinal);
 

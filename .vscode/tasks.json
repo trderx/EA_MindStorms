@@ -21,13 +21,13 @@
                 "echo": true,
                 "reveal": "always",
                 "focus": true,
-                "panel": "shared"
+                "panel": "new"
              },
             "promptOnClose": true,
             "args": [
                 "/compile:\"${file}\"",
                 "/inc:\"C:\\Users\\rodol\\AppData\\Roaming\\MetaQuotes\\Terminal\\3294B546D50FEEDA6BF3CFC7CF858DB7\\MQL4\"",
-                "/log:\"${file}.log\" | out-null;",
+                "/log:\"${file}.log\" | out-null; ",
                 "type \"${file}.log\";",
                 "del \"${file}.log\";"
                 

@@ -1,5 +1,6 @@
 extern string MovingAverageConfig__ = "-----------------------------Moving Average--------------------";
 input bool EnableSinalMovingAverage = true;        //Enable Sinal  Moving Average
+input bool InpMaFilterInverter   = false;          // If True Invert Filter
 input ENUM_TIMEFRAMES InpMaFrame = PERIOD_H4;      // Moving Average TimeFrame
 input int InpMaPeriod = 58;                        // Moving Average Period
 input ENUM_MA_METHOD InpMaMethod = MODE_EMA;       // Moving Average Method
@@ -17,11 +18,16 @@ int DivSinalMA()
 
 int GetSinalMA()
 {
+    int vRet = 0;
+
     if (!EnableSinalMovingAverage)
-        return (0);
+       vRet;
     if (iClose(NULL, 0, 0) > iMA(NULL, InpMaFrame, InpMaPeriod, 0, InpMaMethod, InpMaPrice, InpMaShift))
-        return (1);
+        vRet= 1;
     if (iClose(NULL, 0, 0) < iMA(NULL, InpMaFrame, InpMaPeriod, 0, InpMaMethod, InpMaPrice, InpMaShift))
-        return (-1);
-    return (0);
+        vRet -1;
+
+    if(InpMaFilterInverter) vRet = vRet*-1;
+    
+    return vRet;
 }

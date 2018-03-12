@@ -4,20 +4,22 @@ extern string MACH = "                                  MODULE MACH GRID        
 extern string MACH____ = "---------------------------------------------------------------";
 string MACH_EAName = "MACH";
 input bool InpEnableMACH = true;         //Enable MACH
-extern int MACH_MagicNumber = 8801111;   //Magic MACH
-extern int MACH_InpLotdecimal = 2;       //Lotdecimal
+extern int MACH_MagicNumber = 1101111;   //Magic MACH
 extern double MACH_InpTakeProfit = 18.0; //Take Profit
 extern double MACH_InpStoploss = 500.0;  //Stoploss
 extern double MACH_InpSlip = 3.0;        //Slip
 input double MACH_InpMaxLot = 99;        // Max Lot
 
 extern string MACH_Configgrid__ = "---------------------------GRID--------------------------------------";
-extern double MACH_InpLotExponent = 1.3;     // Grid Increment Factor
-extern bool MACH_InpDynamicPips = true;      // Dynamic Grid
-extern int MACH_InpStepSizeGridDefault = 12; // Step Size in Pips [Default if MACH_InpDynamicPips true]
-extern int MACH_InpGlubina = 24;             //Qtd Periodos p/ maxima e minima
-extern int MACH_InpDEL = 3;                  //Divizor de (maxima - minima) p/ calculo do tamanho do grid
-extern int MACH_InpMaxTrades = 99;           // Max Lot Open Simultaneo
+input ENUM_TYPE_GRID_LOT MACH_TypeGridLot = Summ_lot; // Type Grid Lot
+extern double MACH_InpLotExponent = 1.3;                // Grid Increment Factor (If Martingale)
+extern bool MACH_InpDynamicSizeGrid = true;             // Dynamic Size Grid
+extern int MACH_InpStepSizeGridDefault = 12;            // Step Size in Pips [Default if MACH_InpDynamicSizeGrid true]
+extern int MACH_InpGlubina = 24;                        //( Dynamic Grid) Qtd Periodos p/ maxima e minima
+extern int MACH_InpDEL = 3;                             //( Dynamic Grid) Divizor de (maxima - minima) p/ calculo do tamanho do grid
+extern int MACH_InpMaxTrades = 99;                      // Max Lot Open Simultaneo
+input int MACH_InpGridStepLot = 3;                      // Level to Change STEP LOT (If  Step Lot)
+extern double MACH_InpStepLot = 0.01;                   // STEP LOT (If  Step Lot)
 
 extern string MACH_FilterOpenOneCandle__ = "--------------------Filter One Order by Candle--------------";
 input bool MACH_InpOpenOneCandle = false;                        // Open one order by candle
@@ -25,8 +27,8 @@ input ENUM_TIMEFRAMES MACH_InpTimeframeBarOpen = PERIOD_CURRENT; // Timeframe Op
 
 extern string MACH_EquityCaution__ = "------------------------Filter Caution of Equity ---------------";
 extern bool MACH_InpUseEquityCaution = true;                       //  EquityCaution?
-extern double MACH_InpValueEquityRiskCaution = 10;                 // Total $ Risk to EquityCaution
-extern ENUM_TIMEFRAMES MACH_InpTimeframeEquityCaution = PERIOD_H4; // Timeframe as EquityCaution
+extern double MACH_InpValueEquityRiskCaution = 1;                 // Total $ Risk to EquityCaution
+extern ENUM_TIMEFRAMES MACH_InpTimeframeEquityCaution = PERIOD_H1; // Timeframe as EquityCaution
 extern string MACH_CloseProfit__ = "------------------------ Close in profit Level X ---------------";
 input double MACH_MinProfit = 10.00;   // Minimal Profit Close
 input int MACH_QtdTradesMinProfit = 2; // Qtd Trades Open to Minimal Profit Close
@@ -44,6 +46,8 @@ bool MACH_equityrisk;
 int MACH_vg_cnt = 0;
 int MACH_vg_GridSize = 0;
 string MACH_ID = "MACH", MACH_vg_filters_on = "";
+double MACH_l_sumlot1, MACH_l_sumlot2 = 0, MACH_l_lastlot = 0, MACH_l_lastlot1, MACH_l_lastlot2 = 0;
+double MACH_InpLotdecimal; //Lotdecimal
 
 //+------------------------------------------------------------------+
 //|           EA MACH x                                              |
@@ -54,14 +58,15 @@ void MACHx(int vSinal, bool LotInformado, double Lots)
     if (!InpEnableMACH)
         return;
 
-    if (MACH_m_time_equityrisk == iTime(NULL, MACH_InpTimeframeEquityCaution, 0))
+    if (MACH_InpUseEquityCaution && (MACH_m_time_equityrisk == iTime(NULL, MACH_InpTimeframeEquityCaution, 0)))
     {
         MACH_vg_filters_on += "Filter EquityCaution MACH  ON \n";
-
+        MACH_equityrisk= true;
         return;
     }
     else
     {
+        MACH_equityrisk = false;
         MACH_vg_filters_on = "";
         MACH_m_time_equityrisk = -1;
     }
@@ -82,7 +87,7 @@ void MACHx(int vSinal, bool LotInformado, double Lots)
         Lots = MarketInfo(Symbol(), 25);
 
     // SE DynamicPips  ENABLE
-    if (MACH_InpDynamicPips)
+    if (MACH_InpDynamicSizeGrid)
     {
 
         // calculate highest and lowest price from last bar to 24 bars ago
@@ -106,7 +111,7 @@ void MACHx(int vSinal, bool LotInformado, double Lots)
     MACH_CurrentPairProfit = CalculateProfit(MACH_MagicNumber);
 
     // CONTROL DRAWDOWN
-    if (MACH_CurrentPairProfit < 0.0 && (MACH_CurrentPairProfit < MACH_InpValueEquityRiskCaution * -1))
+    if (MACH_InpUseEquityCaution && (MACH_CurrentPairProfit < 0.0 && (MACH_CurrentPairProfit < MACH_InpValueEquityRiskCaution * -1)))
     {
         MACH_m_time_equityrisk = iTime(NULL, MACH_InpTimeframeEquityCaution, 0);
         MACH_equityrisk = true;
@@ -150,10 +155,11 @@ void MACHx(int vSinal, bool LotInformado, double Lots)
     if (MACH_totalOrdensOpen > 0 && MACH_totalOrdensOpen <= MACH_InpMaxTrades)
     {
         RefreshRates();
-        double l_lastlot1, l_lastlot2 = 0;
-        MACH_LastBuyPrice = FindLastBuyPrice(MACH_MagicNumber, l_lastlot1);
-        MACH_LastSellPrice = FindLastSellPrice(MACH_MagicNumber, l_lastlot2);
-        MACH_sumLots = l_lastlot1 + l_lastlot2;
+        MACH_l_sumlot1 = 0;
+        MACH_l_sumlot2 = 0;
+        MACH_LastBuyPrice = FindLastBuyPrice(MACH_MagicNumber, MACH_l_sumlot1);
+        MACH_LastSellPrice = FindLastSellPrice(MACH_MagicNumber, MACH_l_sumlot2);
+        MACH_sumLots = MACH_l_sumlot1 + MACH_l_sumlot2;
 
         if (MACH_LongTrade && MACH_LastBuyPrice - Ask >= MACH_vg_GridSize * Point)
             MACH_TradeNow = TRUE;
@@ -176,15 +182,26 @@ void MACHx(int vSinal, bool LotInformado, double Lots)
         // ORDEM DE GRID
         if (MACH_TradeNow && (MACH_ShortTrade || MACH_LongTrade))
         {
-            MACH_LastBuyPrice = FindLastBuyPrice(MACH_MagicNumber, MACH_sumLots);
-            MACH_LastSellPrice = FindLastSellPrice(MACH_MagicNumber, MACH_sumLots);
+            MACH_l_lastlot1 = 0;
+            MACH_l_lastlot2 = 0;
+            MACH_l_sumlot1 = 0;
+            MACH_l_sumlot2 = 0;
+            MACH_LastBuyPrice = FindLastBuyPriceLL(MACH_MagicNumber, MACH_l_sumlot1, MACH_l_lastlot1);
+            MACH_LastSellPrice = FindLastSellPriceLL(MACH_MagicNumber, MACH_l_sumlot2, MACH_l_lastlot2);
+            MACH_sumLots = MACH_l_sumlot1 + MACH_l_sumlot2;
+            MACH_l_lastlot = MACH_l_lastlot1 + MACH_l_lastlot2;
 
             MACH_NumOfTrades = MACH_totalOrdensOpen;
+
+            MACH_InpLotdecimal = SymbolInfoDouble(Symbol(), SYMBOL_VOLUME_STEP);
 
             //if(LotInformado)
             //   MACH_iLots = Lots;
             //else
-            MACH_iLots = NormalizeDouble(Lots * MathPow(MACH_InpLotExponent, MACH_NumOfTrades), MACH_InpLotdecimal);
+            if (MACH_ShortTrade)
+                MACH_iLots = MathRound(CalcLot(MACH_TypeGridLot, OP_BUY, MACH_NumOfTrades, MACH_l_lastlot, Lots, MACH_InpLotExponent, MACH_InpGridStepLot, MACH_InpStepLot), MACH_InpLotdecimal);
+            if (MACH_LongTrade)
+                MACH_iLots = MathRound(CalcLot(MACH_TypeGridLot, OP_SELL, MACH_NumOfTrades, MACH_l_lastlot, Lots, MACH_InpLotExponent, MACH_InpGridStepLot, MACH_InpStepLot), MACH_InpLotdecimal);
 
             if (MACH_iLots < MarketInfo(Symbol(), 23))
                 MACH_iLots = MarketInfo(Symbol(), 23);
@@ -247,7 +264,13 @@ void MACHx(int vSinal, bool LotInformado, double Lots)
                 if (LotInformado)
                     MACH_iLots = Lots;
                 else
-                    MACH_iLots = NormalizeDouble(Lots * MathPow(MACH_InpLotExponent, MACH_NumOfTrades), MACH_InpLotdecimal);
+                {
+                     MACH_iLots = Lots;
+                    //if (vSinal == -1)
+                    //    MACH_iLots = MathRound(CalcLot(MACH_TypeGridLot, OP_BUY, MACH_NumOfTrades, MACH_l_lastlot, Lots, MACH_InpLotExponent, MACH_InpGridStepLot, MACH_InpStepLot), MACH_InpLotdecimal);
+                   // if (vSinal == 1)
+                    //    MACH_iLots = MathRound(CalcLot(MACH_TypeGridLot, OP_SELL, MACH_NumOfTrades, MACH_l_lastlot, Lots, MACH_InpLotExponent, MACH_InpGridStepLot, MACH_InpStepLot), MACH_InpLotdecimal);
+                }
 
                 if (MACH_iLots < MarketInfo(Symbol(), 23))
                     MACH_iLots = MarketInfo(Symbol(), 23);

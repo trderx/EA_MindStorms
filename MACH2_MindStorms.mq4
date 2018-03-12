@@ -1,18 +1,25 @@
-//+-----------------------------------------------------------------+
-//|                                      EA_MindStorms_v1.01.mq4 |
-//|                                      rodolfo.leonardo@gmail.com. |
-//+------------------------------------------------------------------+
-#property copyright " EA_MindStorms_v1.01"
+//             P L E A S E   -   D O    N O T    D E L E T E    A N Y T H I N G ! ! !
+// -------------------------------------------------------------------------------------------------
+//                                   MACH2_MindStorms v1.01
+//
+//                       				  	  by Rodolfo
+//                             rodolfo.leonardo@gmail.com
+//
+//--------------------------------------------------------------------------------------------------
+//   THIS EA IS 100 % FREE OPENSOURCE, WHICH MEANS THAT IT'S NOT A COMMERCIAL PRODUCT
+// -------------------------------------------------------------------------------------------------
+
+#property copyright " MACH2_MindStorms_v1.01"
 #property link "rodolfo.leonardo@gmail.com"
 #property version "1.01"
-#property description "EA_MindStorms_v1"
+#property description "MACH2_MindStorms_v1"
 #property description "Strategy: When the signal is buy motor 1 MACHx starts, when the signal is sold the motor 2 MACHx starts"
-#property description "This EA is 100% FREE "
+#property description "This EA is 100% FREE OpenSource"
 #property description "Coder: rodolfo.leonardo@gmail.com "
 #property strict
 
 extern string Version__ = "-----------------------------------------------------------------";
-extern string vg_versao = "            EA_MindStorms_v1 2018-03-04  DEVELOPER EDITION             ";
+extern string vg_versao = "            MACH2_MindStorms_v1 2018-03-12  DEVELOPER EDITION             ";
 extern string Version____ = "-----------------------------------------------------------------";
 
 #include "EAframework.mqh"
@@ -21,11 +28,14 @@ extern string Version____ = "---------------------------------------------------
 #include "TrailingStop.mqh"
 
 #include "SinalMA.mqh"
+#include "SinalHILO.mqh"
 //#include "SinalBB.mqh"
 //#include "SinalRSI.mqh"
 
 #include "FFCallNews.mqh"
 #include "FilterTime.mqh"
+#include "FilterVolatility.mqh"
+#include "FilterMarginLevel.mqh"
 #include "FilterStopOut.mqh"
 
 double vg_Spread = 0;
@@ -65,7 +75,8 @@ void OnDeinit(const int reason)
 //+------------------------------------------------------------------+
 void OnTick()
 {
-
+    Comment(vg_filters_on);
+    vg_filters_on = "";
     PainelUPER(vg_versao);
     RefreshRates();
 
@@ -89,29 +100,53 @@ void OnTick()
     }
 
     //FILTER DATETIME
-    if (InpUtilizeTimeFilter && !TimeFilter())
+    if (TimeFilter())
     {
         vg_filters_on += "Filter TimeFilter ON \n";
 
         return;
     }
+
+    //FILTER Volatility
+    if (FilterVolatility())
+    {
+        vg_filters_on += "Filter Volatility ON \n";
+
+        return;
+    }
+
+    //FILTER MarginLevel
+    if (FilterMargiLevel())
+    {
+        vg_filters_on += "Filter MarginLevel ON \n";
+
+        return;
+    }
+
     if (FilterStopOut(MACH_CurrentPairProfit, MACH_MagicNumber) || FilterStopOut(MACH2_CurrentPairProfit, MACH2_MagicNumber))
         return;
 
-    int SinalMA = GetSinalMA();
-
-    if (SinalMA == -1)
+    int Sinal = (GetSinalMA() + GetSinalHILO()) / (DivSinalMA() + DivSinalHILO());
+    double lotsinitMACH2 = 0.01;
+    double lotsinitMACH1 = 0.01;
+    if (Sinal == -1)
     {
 
         // CloseThisSymbolAll(MACH2_MagicNumber,0);
-
-        MACHx(-1, false, 0.01);
+        if (MACH2_equityrisk)
+            MACHx(-1, true, MACH2_l_lastlot*0.2);
+        else
+            MACHx(-1, false, lotsinitMACH1);
     }
 
-    if (SinalMA == 1)
+    if (Sinal == 1)
     {
+
         //CloseThisSymbolAll(MACH_MagicNumber,0);
-        MACH2x(1, false, 0.01);
+        if (MACH_equityrisk)
+            MACH2x(1, true, MACH_l_lastlot*0.2);
+        else
+            MACH2x(1, false, lotsinitMACH2);
     }
 
     // SE TrailingStop  ENABLE

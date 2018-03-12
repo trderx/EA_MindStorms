@@ -1,6 +1,6 @@
 
 extern string SINAL__ = "------------------------- SINAL NONLANG-------------------------";
-input bool EnableSinalNONLANG = true;         //Enable Sinal  NONLANG (Requer NonLagMA_v7.1)
+input bool EnableSinalNONLANG = false;         //Enable Sinal  NONLANG (Requer NonLagMA_v7.1)
 input ENUM_TIMEFRAMES InpNLFrame = PERIOD_H1; // Moving Average TimeFrame
 extern int Price = 0;                         //Apply to Price(0-Close;1-Open;2-High;3-Low;4-Median price;5-Typical price;6-Weighted Close)
 extern int Length = 4;                        //Period of NonLagMA

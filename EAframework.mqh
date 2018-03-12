@@ -312,6 +312,69 @@ double FindLastBuyPrice(int MagicNumber, double &v_sumLots)
 }
 
 //+------------------------------------------------------------------+
+//|           FindLastBuyPrice                                     |
+//+------------------------------------------------------------------+
+double FindLastBuyPriceLL(int MagicNumber, double &v_sumLots, double &v_lastLots)
+{
+
+    v_sumLots = 0;
+    double oldorderopenprice;
+    int oldticketnumber;
+    double unused = 0;
+    int ticketnumber = 0;
+    for (int vg_cnt = OrdersTotal() - 1; vg_cnt >= 0; vg_cnt--)
+    {
+        OrderSelect(vg_cnt, SELECT_BY_POS, MODE_TRADES);
+        if (OrderSymbol() != Symbol() || OrderMagicNumber() != MagicNumber)
+            continue;
+        if (OrderSymbol() == Symbol() && OrderMagicNumber() == MagicNumber && OrderType() == OP_BUY)
+        {
+            oldticketnumber = OrderTicket();
+            if (oldticketnumber > ticketnumber)
+            {
+                oldorderopenprice = OrderOpenPrice();
+                //unused = oldorderopenprice;
+                v_sumLots += OrderLots();
+                v_lastLots =  OrderLots();
+                ticketnumber = oldticketnumber;
+            }
+        }
+    }
+    return (oldorderopenprice);
+}
+
+//+------------------------------------------------------------------+
+//|           FindLastSellPrice                                     |
+//+------------------------------------------------------------------+
+double FindLastSellPriceLL(int MagicNumber, double &v_sumLots, double &v_lastLots)
+{
+
+    v_sumLots = 0;
+    double oldorderopenprice;
+    int oldticketnumber;
+    double unused = 0;
+    int ticketnumber = 0;
+    for (int vg_cnt = OrdersTotal() - 1; vg_cnt >= 0; vg_cnt--)
+    {
+        OrderSelect(vg_cnt, SELECT_BY_POS, MODE_TRADES);
+        if (OrderSymbol() != Symbol() || OrderMagicNumber() != MagicNumber)
+            continue;
+        if (OrderSymbol() == Symbol() && OrderMagicNumber() == MagicNumber && OrderType() == OP_SELL)
+        {
+            oldticketnumber = OrderTicket();
+            if (oldticketnumber > ticketnumber)
+            {
+                oldorderopenprice = OrderOpenPrice();
+                //unused = oldorderopenprice;
+                v_sumLots += OrderLots();
+                v_lastLots =  OrderLots();
+                ticketnumber = oldticketnumber;
+            }
+        }
+    }
+    return (oldorderopenprice);
+}
+//+------------------------------------------------------------------+
 //|           OpenOrder                                   |
 //+------------------------------------------------------------------+
 int OpenOrder(int pType, double pLots, double pLevel, int sp, double pr, int sl, int tp, string pComment, int pMagic, int pDatetime, color pColor)
@@ -466,7 +529,8 @@ enum ENUM_TYPE_GRID_LOT
    fix_lot   = 0, // Fixed Start Lot 0.01 / 0.01 / 0.01 / 0.01 / 0.01 /.............
    Summ_lot  = 1, // Summ Sart Lot   0.01 / 0.02 / 0.03 / 0.04 / 0.05 /.............
    Martingale= 2, // Martingale Lot  0.01 / 0.02 / 0.04 / 0.08 / 0.16 /.............
-   Step_lot  = 3  // Step Lot        0.01 / 0.01 / 0.01 / 0.02 / 0.02 / 0.02 / 0.03 / 0.03 / 0.03 / 0.04 / 0.04 / 0.04 /............
+   Step_lot  = 3 , // Step Lot        0.01 / 0.01 / 0.01 / 0.02 / 0.02 / 0.02 / 0.03 / 0.03 / 0.03 / 0.04 / 0.04 / 0.04 /............
+   Step_Invert_lot  = 4  // Step Invert Lot        0.10 / 0.10 / 0.10 / 0.09 / 0.09 / 0.09 / 0.08 / 0.08 / 0.08 / 0.08 / 0.08 / 0.07 /............
   };
 
 //+------------------------------------------------------------------+
@@ -479,7 +543,8 @@ enum ENUM_Trade
    All_Trade    // BUY and SELL
   };
 
-  double CalcLot(int TypeLot, int TypeOrder, int vQtdTrades, double LastLot, double StartLot, double GridFactor)
+ 
+  double CalcLot(int TypeLot, int TypeOrder, int vQtdTrades, double LastLot, double StartLot, double GridFactor, int GridStepLot, double StepLot)
   {
     double rezult = 0;
     switch (TypeLot)
@@ -491,36 +556,59 @@ enum ENUM_Trade
 
     case 1: // Summ lot
       rezult = StartLot * vQtdTrades;
-      // if(TypeOrder==OP_BUY && Ask < BuyMinPrice  ) rezult=BuyMinLot+StartLot;
-      // if(TypeOrder==OP_BUY && Ask > BuyMaxPrice  ) rezult=StartLot;
-
-      //if(TypeOrder==OP_SELL&& Bid > SellMaxPrice ) rezult=SellMaxLot+StartLot;
-      //if(TypeOrder==OP_SELL&& Bid < SellMinPrice ) rezult=StartLot;
+  
       break;
 
     case 2: // Martingale lot
       rezult = StartLot * MathPow(GridFactor, vQtdTrades);
-      // if(TypeOrder==OP_BUY && Ask < BuyMinPrice  ) rezult=BuyMinLot*GridFactor;
-      // if(TypeOrder==OP_BUY && Ask > BuyMaxPrice  ) rezult=StartLot;
 
-      //if(TypeOrder==OP_SELL&& Bid > SellMaxPrice ) rezult=SellMaxLot*GridFactor;
-      //if(TypeOrder==OP_SELL&& Bid < SellMinPrice ) rezult=StartLot;
       break;
 
     case 3: // Step lot
       if (vQtdTrades == 0)
-        rezult = StartLot;
-      if (vQtdTrades % 3 == 0)
-        rezult = LastLot + StartLot;
+        return StartLot;
+      if (vQtdTrades % GridStepLot == 0)
+        rezult = LastLot + StepLot;
       else
         rezult = LastLot;
 
-      // if(TypeOrder==OP_BUY && Ask < BuyMinPrice && vQtdTrades%3==0 ) rezult=BuyMinLot+StartLot;
-      // if(TypeOrder==OP_BUY && Ask > BuyMaxPrice  ) rezult=StartLot;
+ 
+      break;
+       case 4: // Step Invert lot
+      if (vQtdTrades == 0)
+        return StartLot;
+      if (vQtdTrades % GridStepLot == 0)
+        rezult = LastLot - StepLot;
+      else
+        rezult = LastLot;
 
-      // if(TypeOrder==OP_SELL&& Bid > SellMaxPrice && vQtdTrades%3==0) rezult=SellMaxLot+StartLot;
-      // if(TypeOrder==OP_SELL&& Bid < SellMinPrice ) rezult=StartLot;
+ 
       break;
     }
     return rezult;
   }
+
+// add leading zeros that the resulting string has 'digits' length.
+string sub_maketimestring ( int par_number, int par_digits )
+{
+	string result;
+
+	result = DoubleToStr ( par_number, 0 );
+	while ( StringLen ( result ) < par_digits ) 
+		result = "0" + result;
+	
+	return ( result );
+}
+
+
+// Make a screenshoot / printscreen
+void sub_makescreenshot ( string par_sx = "" )
+{
+	static int no = 0;
+
+	no ++;
+	string fn = "SnapShot" + Symbol() + Period() + "\\"+Year() + "-" + sub_maketimestring ( Month(), 2 ) + "-" + sub_maketimestring ( Day(), 2 )
+	+ " " + sub_maketimestring ( Hour(), 2 ) + "_" + sub_maketimestring ( Minute(), 2 ) + "_" + sub_maketimestring ( Seconds( ), 2 ) + " " + no + par_sx + ".gif";
+	if ( !ScreenShot ( fn, 640, 480 ) ) 
+		Print ( "ScreenShot error: ",  GetLastError() );
+}

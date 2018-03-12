@@ -1,7 +1,14 @@
-//+-----------------------------------------------------------------+
-//|                                      EA_MindStorms_v1.01.mq4 |
-//|                                      rodolfo.leonardo@gmail.com. |
-//+------------------------------------------------------------------+
+//             P L E A S E   -   D O    N O T    D E L E T E    A N Y T H I N G ! ! ! 
+// -------------------------------------------------------------------------------------------------
+//                                   EA_MindStorms v1.01 
+//
+//                       				  	  by Rodolfo
+//                             rodolfo.leonardo@gmail.com
+//
+//--------------------------------------------------------------------------------------------------
+//   THIS EA IS 100 % FREE OPENSOURCE, WHICH MEANS THAT IT'S NOT A COMMERCIAL PRODUCT
+// -------------------------------------------------------------------------------------------------
+
 #property copyright " EA_MindStorms_v1.01"
 #property link "rodolfo.leonardo@gmail.com"
 #property version "1.01"
@@ -14,6 +21,11 @@
 extern string Version__ = "-----------------------------------------------------------------";
 extern string vg_versao = "           MACH3_MindStorms_v1 2018-03-07  DEVELOPER EDITION             ";
 extern string Version____ = "-----------------------------------------------------------------";
+
+string vg_Debug = "";
+double vg_Spread = 0;
+string vg_filters_on = "";
+string vg_initpainel = false;
 
 #include "EAframework.mqh"
 #include "macx.mqh"
@@ -30,9 +42,8 @@ extern string Version____ = "---------------------------------------------------
 #include "FilterTime.mqh"
 #include "FilterStopOut.mqh"
 
-double vg_Spread = 0;
-string vg_filters_on = "";
-string vg_initpainel = false;
+
+
 //+------------------------------------------------------------------+
 //|  input parameters                                                |
 //+------------------------------------------------------------------+
@@ -67,6 +78,7 @@ void OnDeinit(const int reason)
 //+------------------------------------------------------------------+
 void OnTick()
 {
+    vg_Debug = "";
 
     PainelUPER(vg_versao);
     RefreshRates();
@@ -91,12 +103,13 @@ void OnTick()
     }
 
     //FILTER DATETIME
-    if (InpUtilizeTimeFilter && !TimeFilter())
+    if (TimeFilter())
     {
         vg_filters_on += "Filter TimeFilter ON \n";
 
         return;
     }
+    
     if (FilterStopOut(MACH_CurrentPairProfit, MACH_MagicNumber) || FilterStopOut(MACH2_CurrentPairProfit, MACH2_MagicNumber))
         return;
 
