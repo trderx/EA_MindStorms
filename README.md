@@ -3,6 +3,8 @@ Modular EA Mql4
 
 ![alt text](https://www.pro-linux.de/images/NB3/imgdb/lego-mindstorms-ev3-modelle.jpg)
 
+![alt text](https://fxmedia.s3.amazonaws.com/articles/shutterstock_84791716.jpg)
+
 Read more here:
 
 https://www.forexfactory.com/showthread.php?t=736275
