@@ -6,7 +6,7 @@ Read more here:
 https://www.forexfactory.com/showthread.php?t=736275
 
 Ideia.
-Structure for creating modular EAs. The idea is to create thefts with several different engines talking to each other or just one mechanism in a simple way to test various combinations of strategies.
+Structure for creating modular EAs. The idea is to create robots with several different engines talking to each other or just one mechanism in a simple way to test various combinations of strategies.
 
 An engine will only be a piece of the main EA.
 
