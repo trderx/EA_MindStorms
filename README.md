@@ -1,5 +1,7 @@
 # EA MindStorms
-Modular EA Mql4
+Modular EA Mql4 100% Free and OpenSource
+Link for Donation : https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=NQKQCG78XT8BW
+
 ![alt text](https://forexea.com/wp-content/uploads/2017/02/forexSlider-1200x300.jpg)
 ![alt text](https://www.pro-linux.de/images/NB3/imgdb/lego-mindstorms-ev3-modelle.jpg)
 
