@@ -1,6 +1,8 @@
 # EA MindStorms
 Modular EA Mql4
 
+![alt text](https://www.generationrobots.com/blog/wp-content/uploads/2015/02/LEGO.-MINDSTORMS.PROJECTS.22.png)
+
 Read more here:
 
 https://www.forexfactory.com/showthread.php?t=736275
