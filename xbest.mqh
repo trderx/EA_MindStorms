@@ -92,8 +92,9 @@ int XBEST_OnInit()
 {
   //---
   XBEST_m_symbol = Symbol();
-
-  XBEST_m_pip1 = 1.0 / MathPow(10, Digits - 1);
+   if (Digits == 3 || Digits == 5) XBEST_m_pip1 = 10.0 * Point;
+   else XBEST_m_pip1 = Point;
+  
   XBEST_m_size1 = XBEST_InpGridSize * XBEST_m_pip1;
   XBEST_m_take1 = XBEST_InpTakeProfit * XBEST_m_pip1;
   XBEST_m_hedging1 = false;

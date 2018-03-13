@@ -612,3 +612,27 @@ void sub_makescreenshot ( string par_sx = "" )
 	if ( !ScreenShot ( fn, 640, 480 ) ) 
 		Print ( "ScreenShot error: ",  GetLastError() );
 }
+
+
+void DrawRects(int xPos, int yPos, color clr, int width = 150, int height = 17, string Texto = "")
+{
+
+    string id = "_l" + Texto;
+
+    ObjectDelete(0, id);
+
+    ObjectCreate(0, id, OBJ_BUTTON, 0, 100, 100);
+    ObjectSetInteger(0, id, OBJPROP_XDISTANCE, xPos);
+    ObjectSetInteger(0, id, OBJPROP_YDISTANCE, yPos);
+    ObjectSetInteger(0, id, OBJPROP_BGCOLOR, clr);
+    ObjectSetInteger(0, id, OBJPROP_COLOR, clrWhite);
+    ObjectSetInteger(0, id, OBJPROP_XSIZE, 150);
+    ObjectSetInteger(0, id, OBJPROP_YSIZE, 35);
+
+    ObjectSetInteger(0, id, OBJPROP_WIDTH, 0);
+    ObjectSetString(0, id, OBJPROP_FONT, "Arial");
+    ObjectSetString(0, id, OBJPROP_TEXT, Texto);
+    ObjectSetInteger(0, id, OBJPROP_SELECTABLE, 0);
+}
+
+

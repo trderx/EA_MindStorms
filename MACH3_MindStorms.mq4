@@ -21,6 +21,8 @@
 extern string Version__ = "-----------------------------------------------------------------";
 extern string vg_versao = "           MACH3_MindStorms_v1 2018-03-07  DEVELOPER EDITION             ";
 extern string Version____ = "-----------------------------------------------------------------";
+extern string      __chartTemplate              = " ------- Chart template ------------";
+extern string      InpChartTemplate                = "EA_MindStorm.tpl";
 
 string vg_Debug = "";
 double vg_Spread = 0;
@@ -51,11 +53,33 @@ string vg_initpainel = false;
 extern string Filter_Spread__ = "----------------------------Filter Max Spread----------------";
 input int InpMaxvg_Spread = 24; // Max Spread
 
+void OnStart()
+  {
+//--- example of applying template, located in \MQL4\Files
+   if(FileIsExist(InpChartTemplate))
+     {
+      Print("The file "+ InpChartTemplate +" found in \Files'");
+      //--- apply template
+      if(ChartApplyTemplate(0,"\\Files\\"+ InpChartTemplate))
+        {
+         Print("The template '"+ InpChartTemplate +"' applied successfully");
+        }
+      else
+         Print("Failed to apply '"+ InpChartTemplate +"', error code ",GetLastError());
+     }
+   else
+     {
+      Print("File '"+ InpChartTemplate +"' not found in "
+            +TerminalInfoString(TERMINAL_PATH)+"\\MQL4\\Files");
+     }
+  }
+
 //+------------------------------------------------------------------+
 //| Expert initialization function                                   |
 //+------------------------------------------------------------------+
 int OnInit()
 {
+    
     vg_Spread = MarketInfo(Symbol(), MODE_SPREAD) * Point;
 
     vg_filters_on = "";

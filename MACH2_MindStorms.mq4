@@ -21,6 +21,8 @@
 extern string Version__ = "-----------------------------------------------------------------";
 extern string vg_versao = "            MACH2_MindStorms_v1 2018-03-12  DEVELOPER EDITION             ";
 extern string Version____ = "-----------------------------------------------------------------";
+extern string __chartTemplate = " ------- Chart template ------------";
+extern string InpChartTemplate = "EA_MindStorm.tpl";
 
 #include "EAframework.mqh"
 #include "macx.mqh"
@@ -53,6 +55,23 @@ input int InpMaxvg_Spread = 24; // Max Spread
 //+------------------------------------------------------------------+
 int OnInit()
 {
+
+    //--- example of applying template, located in \MQL4\Files
+    if (FileIsExist(InpChartTemplate))
+    {
+        Print("The file " + InpChartTemplate + " found in \\Files'");
+        //--- apply template
+        if (ChartApplyTemplate(0, "\\Files\\" + InpChartTemplate))
+        {
+            Print("The template '" + InpChartTemplate + "' applied successfully");
+        }
+        else
+            Print("Failed to apply '" + InpChartTemplate + "', error code ", GetLastError());
+    }
+    else
+    {
+        Print("File '" + InpChartTemplate + "' not found in " + TerminalInfoString(TERMINAL_PATH) + "\\MQL4\\Files");
+    }
     vg_Spread = MarketInfo(Symbol(), MODE_SPREAD) * Point;
 
     vg_filters_on = "";
@@ -134,7 +153,7 @@ void OnTick()
 
         // CloseThisSymbolAll(MACH2_MagicNumber,0);
         if (MACH2_equityrisk)
-            MACHx(-1, true, MACH2_l_lastlot*0.2);
+            MACHx(-1, true, MACH2_l_lastlot * 0.2);
         else
             MACHx(-1, false, lotsinitMACH1);
     }
@@ -144,7 +163,7 @@ void OnTick()
 
         //CloseThisSymbolAll(MACH_MagicNumber,0);
         if (MACH_equityrisk)
-            MACH2x(1, true, MACH_l_lastlot*0.2);
+            MACH2x(1, true, MACH_l_lastlot * 0.2);
         else
             MACH2x(1, false, lotsinitMACH2);
     }
@@ -154,4 +173,44 @@ void OnTick()
         TrailingAlls(InpTrailStart, InpTrailStep, MACH_AveragePrice, MACH_MagicNumber);
     if (InpUseTrailingStop)
         TrailingAlls(InpTrailStart, InpTrailStep, MACH2_AveragePrice, MACH2_MagicNumber);
+}
+
+void OnChartEvent(const int id, const long &lparam, const double &dparam, const string &sparam)
+{
+
+    //sparam: Name of the graphical object, on which the event occurred
+
+    // did user click on the chart ?
+    if (id == CHARTEVENT_OBJECT_CLICK)
+    {
+        // and did he click on on of our objects
+        if (StringSubstr(sparam, 0, 2) == "_l")
+        {
+
+            // did user click on the name of a pair ?
+            int len = StringLen(sparam);
+            // Alert(sparam);
+            //
+            if (StringSubstr(sparam, len - 3, 3) == "BUY" || StringSubstr(sparam, len - 3, 3) == "ELL")
+            {
+                // if (InpManualInitGrid && CountTrades() == 0)
+                if (true)
+                {
+                    //Aciona 1ª Ordem do Grid
+                    if (StringSubstr(sparam, len - 3, 3) == "BUY")
+                    {
+                        //BUY
+
+                        //  Alert("BUY");
+                    }
+                    if (StringSubstr(sparam, len - 3, 3) == "ELL")
+                    {
+                        //SELL
+
+                        //  Alert("SELL");
+                    }
+                }
+            }
+        }
+    }
 }
