@@ -1,0 +1,66 @@
+extern string      __chartTemplate              = " ------- Chart template ------------";
+extern string      InpChartTemplate                = "EA_MindStorm.tpl";
+
+
+//+------------------------------------------------------------------+
+//| Script program start function                                    |
+//+------------------------------------------------------------------+
+void OnStart()
+  {
+//--- example of applying template, located in \MQL4\Files
+   if(FileIsExist(InpChartTemplate))
+     {
+      Print("The file "+ InpChartTemplate +" found in \Files'");
+      //--- apply template
+      if(ChartApplyTemplate(0,"\\Files\\"+ InpChartTemplate))
+        {
+         Print("The template '"+ InpChartTemplate +"' applied successfully");
+        }
+      else
+         Print("Failed to apply '"+ InpChartTemplate +"', error code ",GetLastError());
+     }
+   else
+     {
+      Print("File '"+ InpChartTemplate +"' not found in "
+            +TerminalInfoString(TERMINAL_PATH)+"\\MQL4\\Files");
+     }
+  }
+
+//--------------------------------------------------------------------
+//xPos 1 || 2
+void DrawRect(int line, int xPos,color clr, int width, int height=17)
+{
+   string id="_l"+IntegerToString(line)+"c"+IntegerToString(xPos); 
+   ObjectCreate(0,id,OBJ_RECTANGLE_LABEL,0,0,0);
+   ObjectSetInteger(0,id,OBJPROP_XDISTANCE, xPos);
+   ObjectSetInteger(0,id,OBJPROP_YDISTANCE,_line*17+22);
+   ObjectSetInteger(0,id,OBJPROP_BGCOLOR,clr);
+   ObjectSetInteger(0,id,OBJPROP_XSIZE,  width);
+   ObjectSetInteger(0,id,OBJPROP_YSIZE,  17);
+   ObjectSetInteger(0,id, OBJPROP_BACK, true);
+   ObjectSetInteger(0,id, OBJPROP_WIDTH,0);
+}
+
+//--------------------------------------------------------------------
+void OnChartEvent(const int id, const long& lparam, const double& dparam, const string& sparam) 
+{
+
+   //sparam: Name of the graphical object, on which the event occurred
+
+   // did user click on the chart ?
+   if (id == CHARTEVENT_OBJECT_CLICK)
+   {
+	  // and did he click on on of our objects
+      if (StringSubstr(sparam, 0, 2) == "_l") 
+      {
+		// did user click on the name of a pair ?
+		int len = StringLen(sparam);
+		if (StringSubstr(sparam, len - 2, 2)=="c1" ||StringSubstr(sparam, len - 2, 2)=="c2")
+		{
+			// yes then open the chart for this pair
+			//OpenChart(ObjectDescription(sparam));
+                        //Aciona 1ª Ordem do Grid
+		}
+      }
+   }
+}
