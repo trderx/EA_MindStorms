@@ -635,4 +635,3 @@ void DrawRects(int xPos, int yPos, color clr, int width = 150, int height = 17, 
     ObjectSetInteger(0, id, OBJPROP_SELECTABLE, 0);
 }
 
-

@@ -6,12 +6,19 @@
 #property description "Coder: rodolfo.leonardo@gmail.com "
 #property strict
 
+enum ENUM_TypeOperationEA
+  {
+   Open_And_Close =1,
+   Only_Close =2,
+   Stop_And_Close = 3
+  };
+
 //----------------------- Externals ----------------------------------------------------------------
 extern string TypeOperationEA = "==== Type Operation ====";
 extern string TypeOperationStr_1 = "1:Open And Close (normal operations)";
 extern string TypeOperationStr_2 = "2:Only Close (waiting for profit)";
 extern string TypeOperationStr_3 = "3:Stop And Close (immediate operations)";
-extern int TypeOperation = 1; // From 1 to 3
+extern ENUM_TypeOperationEA TypeOperation = Open_And_Close; 
 extern string Money_Management = "==== Money Management ====";
 extern double ManualLotSize = 0.01;   // Lot size
 extern bool UseAutoLotsSize = false;  // Auto lot

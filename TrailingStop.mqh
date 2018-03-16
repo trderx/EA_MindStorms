@@ -31,6 +31,7 @@ void TrailingAlls(double AvgPrice, int MagicNumber)
                             continue;
                         stoptrade = OrderStopLoss();
                         stopcal = Bid - InpTrailStep * Point;
+                        stopcal = ValidStopLoss(OP_BUY, Bid, stopcal);
                         if (stoptrade == 0.0 || (stoptrade != 0.0 && stopcal > stoptrade))
                             OrderModify(OrderTicket(), AvgPrice, stopcal, OrderTakeProfit(), 0, Aqua);
                     }
@@ -41,6 +42,7 @@ void TrailingAlls(double AvgPrice, int MagicNumber)
                             continue;
                         stoptrade = OrderStopLoss();
                         stopcal = Ask + InpTrailStep * Point;
+                        stopcal = ValidStopLoss(OP_SELL, Ask, stopcal);
                         if (stoptrade == 0.0 || (stoptrade != 0.0 && stopcal < stoptrade))
                             OrderModify(OrderTicket(), AvgPrice, stopcal, OrderTakeProfit(), 0, Red);
                     }
@@ -49,4 +51,42 @@ void TrailingAlls(double AvgPrice, int MagicNumber)
             }
         }
     }
+}
+
+double GetPoint(string mySymbol)
+{
+   double mPoint, myDigits;
+   
+   myDigits = MarketInfo (mySymbol, MODE_DIGITS);
+   if (myDigits < 4)
+      mPoint = 0.01;
+   else
+      mPoint = 0.0001;
+   
+   return(mPoint);
+}
+
+double ValidStopLoss(int type, double price, double SL)
+{
+
+    double mySL;
+    double minstop;
+
+    minstop = MarketInfo(Symbol(), MODE_STOPLEVEL);
+    if (Digits == 3 || Digits == 5)
+        minstop = minstop / 10;
+
+    mySL = SL;
+    if (type == OP_BUY)
+    {
+        if ((price - mySL) < minstop * Point)
+            mySL = price - minstop * Point;
+    }
+    if (type == OP_SELL)
+    {
+        if ((mySL - price) < minstop * Point)
+            mySL = price + minstop * Point;
+    }
+
+    return (NormalizeDouble(mySL, MarketInfo(Symbol(), MODE_DIGITS)));
 }
