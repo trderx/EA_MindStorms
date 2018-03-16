@@ -3,5 +3,6 @@
     "files.associations": {
         "*.mq4": "cpp",
         "*.mqh": "cpp"
-    }
+    },
+    "C_Cpp.intelliSenseEngineFallback": "Disabled"
 }

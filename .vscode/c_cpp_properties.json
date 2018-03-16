@@ -1,0 +1,77 @@
+{
+    "configurations": [
+        {
+            "name": "Mac",
+            "includePath": [
+                "/usr/include",
+                "/usr/local/include",
+                "${workspaceRoot}"
+            ],
+            "defines": [],
+            "intelliSenseMode": "clang-x64",
+            "browse": {
+                "path": [
+                    "/usr/include",
+                    "/usr/local/include",
+                    "${workspaceRoot}"
+                ],
+                "limitSymbolsToIncludedHeaders": true,
+                "databaseFilename": ""
+            },
+            "macFrameworkPath": [
+                "/System/Library/Frameworks",
+                "/Library/Frameworks"
+            ]
+        },
+        {
+            "name": "Linux",
+            "includePath": [
+                "/usr/include",
+                "/usr/local/include",
+                "${workspaceRoot}"
+            ],
+            "defines": [],
+            "intelliSenseMode": "clang-x64",
+            "browse": {
+                "path": [
+                    "/usr/include",
+                    "/usr/local/include",
+                    "${workspaceRoot}"
+                ],
+                "limitSymbolsToIncludedHeaders": true,
+                "databaseFilename": ""
+            }
+        },
+        {
+            "name": "Win32",
+            "includePath": [
+                "C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/include/*",
+                "C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/atlmfc/include/*",
+                "C:/Program Files (x86)/Windows Kits/8.1/Include/um",
+                "C:/Program Files (x86)/Windows Kits/8.1/Include/shared",
+                "C:/Program Files (x86)/Windows Kits/8.1/Include/winrt",
+                "C:/Users/rodol/AppData/Roaming/MetaQuotes/Terminal/3294B546D50FEEDA6BF3CFC7CF858DB7/MQL4/Include",
+                "${workspaceRoot}"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "intelliSenseMode": "msvc-x64",
+            "browse": {
+                "path": [
+                    "C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/include/*",
+                    "C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/atlmfc/include/*",
+                    "C:/Program Files (x86)/Windows Kits/8.1/Include/um",
+                    "C:/Program Files (x86)/Windows Kits/8.1/Include/shared",
+                    "C:/Program Files (x86)/Windows Kits/8.1/Include/winrt",
+                    "${workspaceRoot}"
+                ],
+                "limitSymbolsToIncludedHeaders": true,
+                "databaseFilename": ""
+            }
+        }
+    ],
+    "version": 3
+}

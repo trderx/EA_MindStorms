@@ -29,6 +29,7 @@ extern string Version____ = "---------------------------------------------------
 #include "SinalBB.mqh"
 #include "SinalRSI.mqh"
 #include "SinalHILO.mqh"
+//#include "SinalRegression.mqh"
 //#include "SinalNONLANG.mqh"
 
 #include "FFCallNews.mqh"

@@ -57,16 +57,15 @@ extern ENUM_TIMEFRAMES XBEST_InpTimeframeEquityCaution = PERIOD_D1; // Timeframe
 //LOT_MODE_FIXED
 //---
 int XBEST_SlipPage = 3;
-int XBEST_Spread = 2.0;
 //---
 
 bool XBEST_m_hedging1, XBEST_m_target_filter1, XBEST_m_initpainel;
 int XBEST_m_direction1, XBEST_m_current_day1, XBEST_m_previous_day1;
-double XBEST_m_level1, XBEST_m_buyer1, XBEST_m_seller1, XBEST_m_target1, XBEST_m_profit1;
-double XBEST_m_pip1, XBEST_m_size1, XBEST_m_take1, XBEST_m_spread1, XBEST_m_mediaprice1, XBEST_m_lastlot1;
+double XBEST_m_level1, XBEST_m_buyer1, XBEST_m_seller1, XBEST_m_target1, XBEST_m_profit1, XBEST_m_spreadX, m_spread;
+double XBEST_m_pip1, XBEST_m_size1, XBEST_m_take1, XBEST_m_mediaprice1, XBEST_m_lastlot1;
 datetime XBEST_m_datetime_ultcandleopen1, XBEST_m_time_equityrisk1, vXBEST_m_time_equityrisk;
 
-int XBEST_m_orders_count1, XBEST_m_spreadX;
+int XBEST_m_orders_count1;
 string XBEST_m_symbol;
 
 string XBEST_m_filters_on;
@@ -78,7 +77,7 @@ string  DebugxBest()
   vg_Debug = vg_Debug + "[ XBEST_m_hedging1, XBEST_m_target_filter1;XBEST_m_initpainel] [" + XBEST_m_hedging1 + "/" + XBEST_m_target_filter1 + "/" + XBEST_m_initpainel + "] \n";
   vg_Debug = vg_Debug + "[ XBEST_m_direction1, XBEST_m_current_day1, XBEST_m_previous_day1;] [" + XBEST_m_direction1 + "/" + XBEST_m_current_day1 + "/" + XBEST_m_previous_day1 + "] \n";
   vg_Debug = vg_Debug + "[ XBEST_m_level1, XBEST_m_buyer1, XBEST_m_seller1, XBEST_m_target1, XBEST_m_profit1;] [" + XBEST_m_level1 + "/" + XBEST_m_buyer1 + "/" + XBEST_m_seller1 + "/" + XBEST_m_target1 + "/" + XBEST_m_profit1 + "] \n";
-  vg_Debug = vg_Debug + "[ XBEST_m_pip1, XBEST_m_size1, XBEST_m_take1, XBEST_m_spread1; XBEST_m_mediaprice1, XBEST_m_lastlot1] [" + XBEST_m_pip1 + "/" + XBEST_m_size1 + "/" + XBEST_m_take1 + "/" + XBEST_m_spread1 + "/" + XBEST_m_mediaprice1 + "/" + XBEST_m_lastlot1 + "] \n";
+  vg_Debug = vg_Debug + "[ XBEST_m_pip1, XBEST_m_size1, XBEST_m_take1; XBEST_m_mediaprice1, XBEST_m_lastlot1] [" + XBEST_m_pip1 + "/" + XBEST_m_size1 + "/" + XBEST_m_take1  + "/" + XBEST_m_mediaprice1 + "/" + XBEST_m_lastlot1 + "] \n";
   vg_Debug = vg_Debug + "[XBEST_m_datetime_ultcandleopen1, XBEST_m_time_equityrisk1;vXBEST_m_time_equityrisk] [" + XBEST_m_datetime_ultcandleopen1 + "/" + XBEST_m_time_equityrisk1 + "/" + vXBEST_m_time_equityrisk + "] \n";
   vg_Debug = vg_Debug + "[XBEST_m_orders_count1, XBEST_m_spreadX; ] [" + XBEST_m_orders_count1 + "/" + XBEST_m_spreadX + "] \n";
 
@@ -100,7 +99,7 @@ int XBEST_OnInit()
   XBEST_m_hedging1 = false;
   XBEST_m_target_filter1 = false;
   XBEST_m_direction1 = 0;
-  XBEST_m_spread1 = 0.0;
+  m_spread = 0.0;
   XBEST_m_datetime_ultcandleopen1 = -1;
   XBEST_m_time_equityrisk1 = -1;
   XBEST_m_orders_count1 = 0;
@@ -122,7 +121,7 @@ void XBEST_OnTick(int Sinal)
   if(XBEST_InpEnableEngineA)
   xBest("S", Sinal, XBEST_InpHedge, XBEST_InpMagic, XBEST_m_orders_count1, XBEST_m_mediaprice1, XBEST_m_hedging1, XBEST_m_target_filter1,
         XBEST_m_direction1, XBEST_m_current_day1, XBEST_m_previous_day1, XBEST_m_level1, XBEST_m_buyer1, XBEST_m_seller1,
-        XBEST_m_target1, XBEST_m_profit1, XBEST_m_pip1, XBEST_m_size1, XBEST_m_take1, XBEST_m_spread1, XBEST_m_datetime_ultcandleopen1,
+        XBEST_m_target1, XBEST_m_profit1, XBEST_m_pip1, XBEST_m_size1, XBEST_m_take1,  XBEST_m_datetime_ultcandleopen1,
         XBEST_m_time_equityrisk1);
 }
 //+------------------------------------------------------------------+
@@ -131,10 +130,11 @@ void XBEST_OnTick(int Sinal)
 void xBest(string Id, int Sinal, double LotsHedge, int vXBEST_InpMagic, int &m_orders_count, double &m_mediaprice, bool &m_hedging, bool &m_target_filter,
            int &m_direction, int &m_current_day, int &m_previous_day,
            double &m_level, double &m_buyer, double &m_seller, double &m_target, double &m_profit,
-           double &m_pip, double &m_size, double &m_take, double &m_spread, datetime &vDatetimeUltCandleOpen,
+           double &m_pip, double &m_size, double &m_take,  datetime &vDatetimeUltCandleOpen,
            datetime &m_time_equityrisk)
 {
 
+   m_spread = MarketInfo(Symbol(), MODE_SPREAD) * m_pip;
   //FILTER EquityCaution
   if (XBEST_m_orders_count1 == 0)
     XBEST_m_time_equityrisk1 = -1;
@@ -276,7 +276,7 @@ void xBest(string Id, int Sinal, double LotsHedge, int vXBEST_InpMagic, int &m_o
 
     XBEST_CloseThisSymbolAll(vXBEST_InpMagic);
 
-    m_spread = 0.0;
+   
     return;
   }
 
@@ -328,14 +328,14 @@ void xBest(string Id, int Sinal, double LotsHedge, int vXBEST_InpMagic, int &m_o
   {
     if (long_condition && buyer_counter == XBEST_InpHedge)
     {
-      m_spread = XBEST_Spread * m_pip;
+      //m_spread = XBEST_Spread * m_pip;
       m_seller = bid_price;
       m_hedging = true;
       return;
     }
     if (short_condition && seller_counter == XBEST_InpHedge)
     {
-      m_spread = XBEST_Spread * m_pip;
+   // m_spread = XBEST_Spread * m_pip;
       m_buyer = ask_price;
       m_hedging = true;
       return;

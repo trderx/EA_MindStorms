@@ -39,6 +39,7 @@ string vg_initpainel = false;
 #include "SinalBB.mqh"
 #include "SinalRSI.mqh"
 #include "SinalNONLANG.mqh"
+#include "SinalRegression.mqh"
 
 #include "FFCallNews.mqh"
 #include "FilterTime.mqh"
