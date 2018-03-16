@@ -635,3 +635,147 @@ void DrawRects(int xPos, int yPos, color clr, int width = 150, int height = 17, 
     ObjectSetInteger(0, id, OBJPROP_SELECTABLE, 0);
 }
 
+//--------------------------------------------------------------------
+bool ButtonCreate(const long              chart_ID=0,               // ID ãðàôèêà
+                  const string            name="Button",            // èìÿ êíîïêè
+                  const int               sub_window=0,             // íîìåð ïîäîêíà
+                  const long               x=0,                      // êîîðäèíàòà ïî îñè X
+                  const long               y=0,                      // êîîðäèíàòà ïî îñè Y
+                  const int               width=50,                 // øèðèíà êíîïêè
+                  const int               height=18,                // âûñîòà êíîïêè
+                  const string            text="Button",            // òåêñò
+                  const string            font="Arial",             // øðèôò
+                  const int               font_size=8,             // ðàçìåð øðèôòà
+                  const color             clr=clrBlack,               // öâåò òåêñòà
+                  const color             clrON=clrLightGray,            // öâåò ôîíà
+                  const color             clrOFF=clrLightGray,          // öâåò ôîíà
+                  const color             border_clr=clrNONE,       // öâåò ãðàíèöû
+                  const bool              state=false,       //
+                  const ENUM_BASE_CORNER  CORNER=CORNER_RIGHT_UPPER)
+  {
+   if (ObjectFind(chart_ID,name)==-1)
+   {
+      ObjectCreate(chart_ID,name,OBJ_BUTTON,sub_window,0,0);
+      ObjectSetInteger(chart_ID,name,OBJPROP_XSIZE,width);
+      ObjectSetInteger(chart_ID,name,OBJPROP_YSIZE,height);
+      ObjectSetInteger(chart_ID,name,OBJPROP_CORNER,CORNER);
+      ObjectSetString(chart_ID,name,OBJPROP_FONT,font);
+      ObjectSetInteger(chart_ID,name,OBJPROP_FONTSIZE,font_size);
+      ObjectSetInteger(chart_ID,name,OBJPROP_BACK,0);
+      ObjectSetInteger(chart_ID,name,OBJPROP_SELECTABLE,0);
+      ObjectSetInteger(chart_ID,name,OBJPROP_SELECTED,0);
+      ObjectSetInteger(chart_ID,name,OBJPROP_HIDDEN,1);
+      ObjectSetInteger(chart_ID,name,OBJPROP_ZORDER,1);
+      ObjectSetInteger(chart_ID,name,OBJPROP_STATE,state);
+   }
+   ObjectSetInteger(chart_ID,name,OBJPROP_BORDER_COLOR,border_clr);
+   color back_clr;
+   if (ObjectGetInteger(chart_ID,name,OBJPROP_STATE)) back_clr=clrON; else back_clr=clrOFF;
+   ObjectSetInteger(chart_ID,name,OBJPROP_BGCOLOR,back_clr);
+   ObjectSetInteger(chart_ID,name,OBJPROP_COLOR,clr);
+   ObjectSetString(chart_ID,name,OBJPROP_TEXT,text);
+   ObjectSetInteger(chart_ID,name,OBJPROP_XDISTANCE,x);
+   ObjectSetInteger(chart_ID,name,OBJPROP_YDISTANCE,y);
+   return(true);
+}
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+void DrawLABEL(int c,string name,string Name,int X,int Y,color clr)
+  {
+   if(ObjectFind(name)==-1)
+     {
+      ObjectCreate(name,OBJ_LABEL,0,0,0);
+      ObjectSet(name,OBJPROP_CORNER,c);
+      ObjectSet(name,OBJPROP_XDISTANCE,X);
+      ObjectSet(name,OBJPROP_YDISTANCE,Y);
+      ObjectSetInteger(0,name,OBJPROP_SELECTABLE,false);
+      ObjectSetInteger(0,name,OBJPROP_SELECTED,false);
+     }
+   ObjectSetText(name,Name,10,"Arial",clr);
+  }
+  
+//--------------------------------------------------------------------
+bool RectLabelCreate(const long             chart_ID=0,               // ID ãðàôèêà
+                     const string           name="RectLabel",         // èìÿ ìåòêè
+                     const int              sub_window=0,             // íîìåð ïîäîêíà
+                     const long              x=0,                     // êîîðäèíàòà ïî îñè X
+                     const long              y=0,                     // êîîðäèíàòà ïî îñè y
+                     const int              width=50,                 // øèðèíà
+                     const int              height=18,                // âûñîòà
+                     const color            back_clr=clrWhite,        // öâåò ôîíà
+                     const color            clr=clrBlack,             // öâåò ïëîñêîé ãðàíèöû (Flat)
+                     const ENUM_LINE_STYLE  style=STYLE_SOLID,        // ñòèëü ïëîñêîé ãðàíèöû
+                     const int              line_width=1,             // òîëùèíà ïëîñêîé ãðàíèöû
+                     const bool             back=false,               // íà çàäíåì ïëàíå
+                     const bool             selection=false,          // âûäåëèòü äëÿ ïåðåìåùåíèé
+                     const bool             hidden=true,              // ñêðûò â ñïèñêå îáúåêòîâ
+                     const long             z_order=0)                // ïðèîðèòåò íà íàæàòèå ìûøüþ
+  {
+   ResetLastError();
+   if (ObjectFind(chart_ID,name)==-1)
+   {
+      ObjectCreate(chart_ID,name,OBJ_RECTANGLE_LABEL,sub_window,0,0);
+      ObjectSetInteger(chart_ID,name,OBJPROP_BORDER_TYPE,BORDER_FLAT);
+      ObjectSetInteger(chart_ID,name,OBJPROP_CORNER,CORNER_RIGHT_UPPER);
+      ObjectSetInteger(chart_ID,name,OBJPROP_STYLE,style);
+      ObjectSetInteger(chart_ID,name,OBJPROP_WIDTH,line_width);
+      ObjectSetInteger(chart_ID,name,OBJPROP_BACK,back);
+      ObjectSetInteger(chart_ID,name,OBJPROP_SELECTABLE,selection);
+      ObjectSetInteger(chart_ID,name,OBJPROP_SELECTED,selection);
+      ObjectSetInteger(chart_ID,name,OBJPROP_HIDDEN,hidden);
+      ObjectSetInteger(chart_ID,name,OBJPROP_ZORDER,z_order);
+      //ObjectSetInteger(chart_ID,name,OBJPROP_ALIGN,ALIGN_RIGHT); 
+   }
+   ObjectSetInteger(chart_ID,name,OBJPROP_BGCOLOR,back_clr);
+   ObjectSetInteger(chart_ID,name,OBJPROP_COLOR,clr);
+   ObjectSetInteger(chart_ID,name,OBJPROP_XSIZE,width);
+   ObjectSetInteger(chart_ID,name,OBJPROP_YSIZE,height);
+   ObjectSetInteger(chart_ID,name,OBJPROP_XDISTANCE,x);
+   ObjectSetInteger(chart_ID,name,OBJPROP_YDISTANCE,y);
+   return(true);
+}
+//--------------------------------------------------------------------
+bool LabelCreate(const long              chart_ID=0,               // ID �������
+                 const string            name="Label",             // ��� �����
+                 const int               sub_window=0,             // ����� �������
+                 const long              x=0,                      // ���������� �� ��� X
+                 const long              y=0,                      // ���������� �� ��� y
+                 const ENUM_BASE_CORNER  corner=CORNER_LEFT_UPPER, // ���� ������� ��� ��������
+                 const string            text="Label",             // �����
+                 const string            font="Arial",             // �����
+                 const int               font_size=10,             // ������ ������
+                 const color             clr=clrNONE,      
+                 const double            angle=0.0,                // ������ ������
+                 const ENUM_ANCHOR_POINT anchor=ANCHOR_LEFT_UPPER, // ������ ��������
+                 const bool              back=false,               // �� ������ �����
+                 const bool              selection=false,          // �������� ��� �����������
+                 const bool              hidden=true,              // ����� � ������ ��������
+                 const long              z_order=0)                // ��������� �� ������� �����
+{
+   ResetLastError();
+   if (ObjectFind(chart_ID,name)==-1)
+   {
+      if(!ObjectCreate(chart_ID,name,OBJ_LABEL,sub_window,0,0))
+      {
+         Print(__FUNCTION__,": �� ������� ������� ��������� �����! ��� ������ = ",GetLastError());
+         return(false);
+      }
+      ObjectSetInteger(chart_ID,name,OBJPROP_CORNER,corner);
+      ObjectSetString(chart_ID,name,OBJPROP_FONT,font);
+      ObjectSetInteger(chart_ID,name,OBJPROP_FONTSIZE,font_size);
+      ObjectSetDouble(chart_ID,name,OBJPROP_ANGLE,angle);
+      ObjectSetInteger(chart_ID,name,OBJPROP_ANCHOR,anchor);
+      ObjectSetInteger(chart_ID,name,OBJPROP_BACK,back);
+      ObjectSetInteger(chart_ID,name,OBJPROP_SELECTABLE,selection);
+      ObjectSetInteger(chart_ID,name,OBJPROP_SELECTED,selection);
+      ObjectSetInteger(chart_ID,name,OBJPROP_HIDDEN,hidden);
+      ObjectSetInteger(chart_ID,name,OBJPROP_ZORDER,z_order);
+   }
+   ObjectSetInteger(chart_ID,name,OBJPROP_COLOR,clr);
+   ObjectSetInteger(chart_ID,name,OBJPROP_XDISTANCE,x);
+   ObjectSetInteger(chart_ID,name,OBJPROP_YDISTANCE,y);
+   ObjectSetString(chart_ID,name,OBJPROP_TEXT,text);
+   return(true);
+  }

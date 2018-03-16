@@ -58,11 +58,16 @@ input int InpMaxvg_Spread = 24; // Max Spread
 //+------------------------------------------------------------------+
 int OnInit()
 {
+    DrawLABEL("cm L","XBEST",95,30,clrBlack,ANCHOR_CENTER);
+   RectLabelCreate(0,"cm F"    ,0,229,19 ,220,225);
+    ButtonCreate(0,"cm Buy Stop"     ,0,225,40,100,20,"Buy Stop","Arial",8,clrBlack,clrLightGray,clrLightGray,clrNONE,1);
+   ButtonCreate(0,"cm Sell Stop"    ,0,225,62,100,20,"Sell Stop","Arial",8,clrBlack,clrLightGray,clrLightGray,clrNONE,1);
+
     vg_Spread = MarketInfo(Symbol(), MODE_SPREAD) * Point;
 
     vg_filters_on = "";
     vg_initpainel = true;
-
+ 
     printf(vg_versao + " - INIT");
 
     XBEST_OnInit();
