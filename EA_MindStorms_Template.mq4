@@ -30,15 +30,15 @@ extern string Version____ = "---------------------------------------------------
 #include "xbest.mqh"
 #include "TrailingStop.mqh"
 
-#include "SinalMA.mqh"
-#include "SinalBB.mqh"
-#include "SinalRSI.mqh"
-//#include "SinalNONLANG.mqh"
+#include "Sinal/SinalMA.mqh"
+#include "Sinal/SinalBB.mqh"
+#include "Sinal/SinalRSI.mqh"
+//#include "Sinal/SinalNONLANG.mqh"
 
-#include "FFCallNews.mqh"
-#include "FilterTime.mqh"
-#include "FilterVolatility.mqh"
-#include "FilterStopOut.mqh"
+#include "Filter/FFCallNews.mqh"
+#include "Filter/FilterTime.mqh"
+#include "Filter/FilterVolatility.mqh"
+#include "Filter/FilterStopOut.mqh"
 
 double vg_Spread = 0;
 string vg_filters_on = "";

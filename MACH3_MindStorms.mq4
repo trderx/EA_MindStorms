@@ -35,15 +35,15 @@ string vg_initpainel = false;
 #include "macx3.mqh"
 #include "TrailingStop.mqh"
 
-#include "SinalMA.mqh"
-#include "SinalBB.mqh"
-#include "SinalRSI.mqh"
-#include "SinalNONLANG.mqh"
-#include "SinalRegression.mqh"
+#include "Sinal/SinalMA.mqh"
+#include "Sinal/SinalBB.mqh"
+#include "Sinal/SinalRSI.mqh"
+#include "Sinal/SinalNONLANG.mqh"
+#include "Sinal/SinalRegression.mqh"
 
-#include "FFCallNews.mqh"
-#include "FilterTime.mqh"
-#include "FilterStopOut.mqh"
+#include "Filter/FFCallNews.mqh"
+#include "Filter/FilterTime.mqh"
+#include "Filter/FilterStopOut.mqh"
 
 
 
