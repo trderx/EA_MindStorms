@@ -1,4 +1,4 @@
-#property copyright " MAXGRID_MindStorms_v1.01"
+#property copyright " MAXGRID_v1.01"
 #property link "rodolfo.leonardo@gmail.com"
 #property version "1.01"
 #property description "MAXGRID"

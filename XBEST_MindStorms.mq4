@@ -1,6 +1,6 @@
 //             P L E A S E   -   D O    N O T    D E L E T E    A N Y T H I N G ! ! !
 // -------------------------------------------------------------------------------------------------
-//                                       XBEST_MindStorms 
+//                                       XBEST_MindStorms
 //
 //                       				  	  by Rodolfo
 //                             rodolfo.leonardo@gmail.com
@@ -21,9 +21,10 @@ extern string Version__ = "-----------------------------------------------------
 extern string vg_versao = "        XBEST_MindStorms_v1.01 2018-03-11  DEVELOPER EDITION             ";
 extern string Version____ = "-----------------------------------------------------------------";
 
-#include "EAframework.mqh"
-#include "xbest.mqh"
-#include "TrailingStop.mqh"
+#include "SDK/EAframework.mqh"
+#include "SDK/TrailingStop.mqh"
+
+#include "Engines/xbest.mqh"
 
 #include "Sinal/SinalMA.mqh"
 #include "Sinal/SinalBB.mqh"
@@ -101,11 +102,11 @@ void OnTick()
             return;
         }
     }
-     
+
     //FILTER DATETIME
-    if (TimeFilter() )
+    if (TimeFilter())
     {
-   
+
         vg_filters_on += "Filter TimeFilter ON \n";
 
         return;
@@ -119,15 +120,15 @@ void OnTick()
         return;
     }
 
-     //FILTER MarginLevel
+    //FILTER MarginLevel
     if (FilterMargiLevel())
     {
         vg_filters_on += "Filter MarginLevel ON \n";
 
         return;
     }
-  
-    int Sinal = (GetSinalMA() + GetSinalBB() + GetSinalRSI() + GetSinalHILO()) / (DivSinalMA() + DivSinalBB() + DivSinalRSI()+ DivSinalHILO());
+
+    int Sinal = (GetSinalMA() + GetSinalBB() + GetSinalRSI() + GetSinalHILO()) / (DivSinalMA() + DivSinalBB() + DivSinalRSI() + DivSinalHILO());
 
     XBEST_OnTick(Sinal);
 

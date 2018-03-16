@@ -24,10 +24,12 @@ extern string Version____ = "---------------------------------------------------
 extern string __chartTemplate = " ------- Chart template ------------";
 extern string InpChartTemplate = "EA_MindStorm.tpl";
 
-#include "EAframework.mqh"
-#include "macx.mqh"
-#include "macx2.mqh"
-#include "TrailingStop.mqh"
+#include "SDK/EAframework.mqh"
+#include "SDK/TrailingStop.mqh"
+
+#include "Engines/macx.mqh"
+#include "Engines/macx2.mqh"
+
 
 #include "Sinal/SinalMA.mqh"
 #include "Sinal/SinalHILO.mqh"

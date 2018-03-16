@@ -29,11 +29,13 @@ double vg_Spread = 0;
 string vg_filters_on = "";
 string vg_initpainel = false;
 
-#include "EAframework.mqh"
-#include "macx.mqh"
-#include "macx2.mqh"
-#include "macx3.mqh"
-#include "TrailingStop.mqh"
+#include "SDK/EAframework.mqh"
+#include "SDK/TrailingStop.mqh"
+
+#include "Engines/macx.mqh"
+#include "Engines/macx2.mqh"
+#include "Engines/macx3.mqh"
+
 
 #include "Sinal/SinalMA.mqh"
 #include "Sinal/SinalBB.mqh"

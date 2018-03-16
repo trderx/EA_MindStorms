@@ -24,11 +24,12 @@ extern string Version__ = "-----------------------------------------------------
 extern string vg_versao = "            EA_MindStorms_v1 2018-03-04  DEVELOPER EDITION             ";
 extern string Version____ = "-----------------------------------------------------------------";
 
-#include "EAframework.mqh"
-#include "macx.mqh"
-#include "macx2.mqh"
-#include "xbest.mqh"
-#include "TrailingStop.mqh"
+#include "SDK/EAframework.mqh"
+#include "SDK/TrailingStop.mqh"
+
+#include "Engines/macx.mqh"
+#include "Engines/macx2.mqh"
+#include "Engines/xbest.mqh"
 
 #include "Sinal/SinalMA.mqh"
 #include "Sinal/SinalBB.mqh"
