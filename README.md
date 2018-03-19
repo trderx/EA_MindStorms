@@ -1,5 +1,9 @@
 # EA MindStorms
 Modular EA Mql4 100% Free and OpenSource
+
+Donations are welcome !!
+Like what you see ? Feel free to donate to support further developments..
+
 Link for Donation : https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=NQKQCG78XT8BW
 
 ![alt text](https://forexea.com/wp-content/uploads/2017/02/forexSlider-1200x300.jpg)
