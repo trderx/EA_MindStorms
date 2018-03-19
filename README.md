@@ -31,3 +31,8 @@ Version history:
 
 Encourage the continued development the ExpertAdvisor
 Link for Donation : https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=NQKQCG78XT8BW
+
+
+[![Video](https://img.youtube.com/vi/r0kAH72zxP8/0.jpg)](https://m.youtube.com/watch?t=2s&v=r0kAH72zxP8 "Video")
+
+[![Video](https://img.youtube.com/vi/ytjBMyNfGzA/0.jpg)](https://m.youtube.com/watch?t=3s&v=ytjBMyNfGzA "Video")
