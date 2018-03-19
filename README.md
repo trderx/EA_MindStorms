@@ -25,6 +25,11 @@ An example of use is to leave an xBest engine only on purchase and another Ilan 
 
 One canceling Drawdow from the other.
 
+
+[![Video](https://img.youtube.com/vi/r0kAH72zxP8/0.jpg)](https://m.youtube.com/watch?t=2s&v=r0kAH72zxP8 "Video")
+
+[![Video](https://img.youtube.com/vi/ytjBMyNfGzA/0.jpg)](https://m.youtube.com/watch?t=3s&v=ytjBMyNfGzA "Video")
+
 Version history:
 
 1.00 initial release
@@ -33,6 +38,3 @@ Encourage the continued development the ExpertAdvisor
 Link for Donation : https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=NQKQCG78XT8BW
 
 
-[![Video](https://img.youtube.com/vi/r0kAH72zxP8/0.jpg)](https://m.youtube.com/watch?t=2s&v=r0kAH72zxP8 "Video")
-
-[![Video](https://img.youtube.com/vi/ytjBMyNfGzA/0.jpg)](https://m.youtube.com/watch?t=3s&v=ytjBMyNfGzA "Video")
