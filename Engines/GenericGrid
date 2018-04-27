@@ -1,0 +1,349 @@
+
+enum OnOff
+  {
+   Off,
+   On
+  };
+
+enum typelot
+  {
+   fix_lot   = 0, // Fixed Start Lot 0.01 / 0.01 / 0.01 / 0.01 / 0.01 /.............
+   Summ_lot  = 1, // Summ Sart Lot   0.01 / 0.02 / 0.03 / 0.04 / 0.05 /.............
+   Martingale= 2, // Martingale Lot  0.01 / 0.02 / 0.04 / 0.08 / 0.16 /.............
+   Step_lot  = 3  // Step Lot        0.01 / 0.01 / 0.01 / 0.02 / 0.02 / 0.02 / 0.03 / 0.03 / 0.03 / 0.04 / 0.04 / 0.04 /............
+  };
+
+
+input typelot TypeLot     = Summ_lot;   // Type Lot
+input OnOff        TradeTrend  = On;     // Open news traders ?
+input int          iTrailingStop          = 30;      // Take Profit (in pips)
+input double       iStartLots             = 0.01;     // Start lot
+input double       iMultiplier            = 1.6;      // Multiplier lot
+input double       iMaximalLots           = 2.56;     // Maximal Lots 
+input int          iMinimalProfit         = 20;       // Minimal profit for close grid (in pips)
+input int          iMagicNumber           = 227;      // iMagicNumber Number (in number)
+input int          iSlippage              = 30;       // Slippage (in pips)
+input double       MinProfit              = 10.00;     // Minimal Profit Close
+input bool         MinimalProfitProtectGrid = true;    //Proteje grid
+input int          Slippage    = 30;                   //Slippage
+
+
+//************************************************************************************************/
+
+int nBuyOrders,nSellOrders;
+double AvgBuyPrice,AvgSellPrice;
+double startEquity;
+double BuyDist;
+double SellDist;
+
+ int
+   tk=0,b=0,s=0;
+
+ double
+   BuyProfit  = 0,SellProfit = 0,SellTicProfit = 0,BuyTicProfit  = 0,BuyMaxPrice=0,BuyMinPrice=0,BuyMaxLot=0,BuyMinLot=0,BuyPriceAll=0,BuySumLot=0,
+   SellMinPrice=0,SellMaxPrice=0,SellMinLot=0,SellMaxLot=0,SelPriceAll=0,SelSumLot=0;
+
+   int
+   BuyMaxTic=0,BuyMinPriceTic=0,SellMaxPriceTic=0,SellMinTic=0;
+
+   double
+   op=0,lt=0,tp=0,sl=0;
+
+   string GridParent = "";
+
+
+double GetBuyDistanceAsk(){
+    return (BuyMinPrice-Ask);
+}
+
+double GetSellDistanceBid(){
+    return (Bid-SellMaxPrice);
+}
+
+void OnTickVRSmart(int SinalGrid, int Sinal )
+  {
+   
+   BuyProfit  = 0;SellProfit = 0;SellTicProfit = 0;BuyTicProfit  = 0;BuyMaxPrice=0;BuyMinPrice=0;BuyMaxLot=0;BuyMinLot=0;BuyPriceAll=0;BuySumLot=0;
+   SellMinPrice=0;SellMaxPrice=0;SellMinLot=0;SellMaxLot=0;SelPriceAll=0;SelSumLot=0;
+
+   
+   BuyMaxTic=0;BuyMinPriceTic=0;SellMaxPriceTic=0;SellMinTic=0;
+
+   
+   op=0;lt=0;tp=0;sl=0;
+
+   tk=0;b=0;s=0;
+   double orders_profit=0;
+   int vTotalOrderOpen = 0;
+   for(int i=OrdersTotal()-1;i>=0;i--)
+     {
+      if(OrderSelect(i,SELECT_BY_POS,MODE_TRADES))
+         if(OrderMagicNumber()==iMagicNumber)
+            if(OrderSymbol()==Symbol())
+              {
+               op=NormalizeDouble(OrderOpenPrice(),Digits());
+               lt=NormalizeDouble(OrderLots(),2);
+               tk=OrderTicket();
+               if(OrderType()==OP_BUY)
+                 {
+                  b++;
+                  if(op>BuyMaxPrice || BuyMaxPrice==0)
+                    {
+                     BuyMaxPrice    = op;
+                     BuyMaxLot = lt;
+                     BuyMaxTic = tk;
+                      BuyTicProfit=OrderProfit();
+                    }
+                     if(OrderProfit()>0)BuyProfit+=OrderProfit()+OrderCommission()+OrderSwap();
+                  if(op<BuyMinPrice || BuyMinPrice==0)
+                    {
+                     BuyMinPrice    = op;
+                     BuyMinLot = lt;
+                     BuyMinPriceTic = tk;
+                    }
+                  BuyPriceAll+=op*lt;
+                  BuySumLot+=lt;
+                 }
+               // ===
+               if(OrderType()==OP_SELL)
+                 {
+                  s++;
+                  if(op>SellMaxPrice || SellMaxPrice==0)
+                    {
+                     SellMaxPrice    = op;
+                     SellMaxLot = lt;
+                     SellMaxPriceTic = tk;
+                    }
+                  if(op<SellMinPrice || SellMinPrice==0)
+                    {
+                     SellMinPrice    = op;
+                     SellMinLot = lt;
+                     SellMinTic = tk;
+                       SellTicProfit=OrderProfit();
+                    }
+                      if(OrderProfit()>0)SellProfit+=OrderProfit()+OrderCommission()+OrderSwap();
+                  SelPriceAll+=op*lt;
+                  SelSumLot+=lt;
+                 }
+                   orders_profit += OrderProfit() + OrderCommission() + OrderSwap();
+              }
+     }
+
+ if(b>0)
+   GridParent = BuyMaxTic;
+ else
+     GridParent = SellMinTic;
+ 
+    BuyDist  = NormalizeDouble(MinStep*Point()+MinStepPlus*Point()*b,Digits());
+    SellDist = NormalizeDouble(MinStep*Point()+MinStepPlus*Point()*s,Digits());
+
+//--------------------------------------------------------------//
+//-------------------- Summ profit final------------------------//
+//--------------------------------------------------------------//
+   double ProfitBuy=BuyTicProfit+BuyProfit;
+   double ProfitSel=SellTicProfit+SellProfit;
+//*************************************************************//
+   double   AwerageBuyPrice=0,AwerageSelPrice=0;
+   if(b>=2) AwerageBuyPrice=NormalizeDouble((BuyPriceAll)/(BuySumLot)+iMinimalProfit*Point(),Digits());
+   if(s>=2) AwerageSelPrice=NormalizeDouble((SelPriceAll)/(SelSumLot)-iMinimalProfit*Point(),Digits());
+
+
+   double BuyLot=0,SelLot=0;
+   if(b==0)BuyLot = iStartLots; else BuyLot = CalcLot(OP_BUY);
+   if(s==0)SelLot = iStartLots; else SelLot = CalcLot(OP_SELL);
+
+   if(BuyLot>iMaximalLots)  BuyLot=iMaximalLots;
+   if(SelLot>iMaximalLots)  SelLot=iMaximalLots;
+
+//*************************************************************//
+//***************   PRIMEIRA ORDEM      ***********************//
+//*************************************************************//
+
+     if( s ==0 && Sinal  == -1  && TradeTrend)
+     {
+      if(OrderSend(Symbol(),OP_SELL,SelLot,NormalizeDouble(Bid,Digits()),iSlippage,0,0,"-1",iMagicNumber,0,clrRed)<0) //## SwingMan
+         Print("OrderSend error #",GetLastError());
+     }
+
+     if( b ==0  && Sinal  == 1 && TradeTrend)
+     {
+      if(OrderSend(Symbol(),OP_BUY,BuyLot,NormalizeDouble(Ask,Digits()),iSlippage,0,0,"1",iMagicNumber,0,clrDodgerBlue)<0) //## SwingMan
+         Print("OrderSend error #",GetLastError());
+     }
+
+//*************************************************************//
+//***************   ORDEM  GRID         ***********************//
+//*************************************************************//
+
+     if( s > 0 && SinalGrid == -1 )
+     {
+      if(OrderSend(Symbol(),OP_SELL,SelLot,NormalizeDouble(Bid,Digits()),iSlippage,0,0, GridParent ,iMagicNumber,0,clrYellow)<0) //## SwingMan
+         Print("OrderSend error #",GetLastError());
+     }
+
+     if( b > 0 && SinalGrid == 1 )
+     {
+      if(OrderSend(Symbol(),OP_BUY,BuyLot,NormalizeDouble(Ask,Digits()),iSlippage,0,0, GridParent ,iMagicNumber,0,clrGreen)<0) //## SwingMan
+         Print("OrderSend error #",GetLastError());
+     }
+
+//*************************************************************//
+//*************************************************************//
+//*************************************************************//
+
+
+   int vTotalHist = OrdersHistoryTotal();
+
+   double vTotalOrderHist= 0;
+     vTotalOrderOpen = b+s;
+
+     if(vTotalOrderOpen > 1 ){
+   for (int vCount = 0; vCount < vTotalHist; vCount++)
+   {
+       OrderSelect(vCount, SELECT_BY_POS, MODE_HISTORY);
+         if (OrderSymbol() != Symbol() || OrderMagicNumber() != iMagicNumber)
+           continue;
+
+      //Lucro do grid
+      if(OrderComment() == GridParent){
+          vTotalOrderHist += OrderProfit() + OrderCommission() + OrderSwap();
+      }
+
+   }
+   }
+  
+   //Caso   Esteja no lucro e grid está grande Fecha todos do grid para evitar DD
+   if(MinimalProfitProtectGrid && (orders_profit +  vTotalOrderHist ) > iMinimalProfit  && vTotalOrderOpen > 2)
+        CloseThisSymbolAll(iMagicNumber,iSlippage );
+
+
+   if(ProfitBuy>=MinProfit && b>=2)
+      CloseAll(OP_BUY,BuyMaxTic);
+
+   if(ProfitSel>=MinProfit && s>=2)
+      CloseAll(OP_SELL,SellMinTic);
+
+//*************************************************************//
+//*************************************************************//
+//*************************************************************//
+   for(int i=OrdersTotal()-1;i>=0;i--)
+     {
+      if(OrderSelect(i,SELECT_BY_POS,MODE_TRADES))
+         if(OrderMagicNumber()==iMagicNumber)
+            if(OrderSymbol()==Symbol())
+              {
+               op=NormalizeDouble(OrderOpenPrice(),Digits());
+               tp=NormalizeDouble(OrderTakeProfit(),Digits());
+               lt=NormalizeDouble(OrderLots(),2);
+               tk=OrderTicket();
+               sl=NormalizeDouble(OrderStopLoss(),Digits());
+
+               if(iTrailingStop>0)
+                 {
+                  if(OrderType()==OP_BUY && b==1)
+
+                     if((Ask-iTrailingStop*Point())>op)
+                        if((Ask-iTrailingStop*Point())>sl)
+                          {
+                           if(!OrderModify(OrderTicket(),OrderOpenPrice(),NormalizeDouble((Ask+Point()-(iTrailingStop*Point())),Digits()),OrderTakeProfit(),0,clrRed))
+                              Print("Error ",GetLastError());
+                          }
+
+                  // ============================================= //
+                  if(OrderType()==OP_SELL && s==1)
+                     if((Bid+iTrailingStop*Point())<op)
+                        if((Bid+iTrailingStop*Point())<sl || sl==0)
+                          {
+                           if(!OrderModify(OrderTicket(),OrderOpenPrice(),NormalizeDouble((Bid-Point()+(iTrailingStop*Point())),Digits()),OrderTakeProfit(),0,clrRed))
+                              Print("Error ",GetLastError());
+                          }
+                 }
+
+               if(OrderType()==OP_BUY && b>=2)
+                  if(Bid<AwerageBuyPrice && tp!=AwerageBuyPrice)
+                    {
+                     if(!OrderModify(OrderTicket(),op,OrderStopLoss(),AwerageBuyPrice,0,clrRed))
+                        Print("OrderModify error #",GetLastError());
+                    }
+
+               if(OrderType()==OP_SELL && s>=2)
+                  if(Ask>AwerageSelPrice && tp!=AwerageSelPrice)
+                    {
+                     if(!OrderModify(OrderTicket(),op,OrderStopLoss(),AwerageSelPrice,0,clrRed))
+                        Print("OrderModify error #",GetLastError());
+                    }
+              }
+     }
+//---
+
+   nBuyOrders =b;
+   nSellOrders=s;
+   AvgBuyPrice =AwerageBuyPrice;
+   AvgSellPrice=AwerageSelPrice;
+
+   //Draw_HorizontalLine("Average BuyPrice",AvgBuyPrice,Avg_BuyPrice_Color);
+   //Draw_HorizontalLine("Average SellPrice",AvgSellPrice,Avg_SellPrice_Color);
+
+  
+  }
+
+//************************************************************************************************/
+//*                                                                                              */
+//************************************************************************************************/
+//+------------------------------------------------------------------+
+void CloseAll(int aType,int ticket)
+  {
+   for(int i=OrdersTotal()-1; i>=0; i--)
+      if(OrderSelect(i,SELECT_BY_POS))
+         if(OrderSymbol()==Symbol())
+            if(OrderMagicNumber()==iMagicNumber)
+              {
+               if(OrderType()==aType && OrderType()==OP_BUY)
+                  if(OrderProfit()>0 || OrderTicket()==ticket)
+                     if(!OrderClose(OrderTicket(),OrderLots(),NormalizeDouble(Bid,Digits()),Slippage,clrRed))
+                        Print(" OrderClose OP_BUY Error N",GetLastError());
+
+               if(OrderType()==aType && OrderType()==OP_SELL)
+                  if(OrderProfit()>0 || OrderTicket()==ticket)
+                     if(!OrderClose(OrderTicket(),OrderLots(),NormalizeDouble(Ask,Digits()),Slippage,clrRed))
+                        Print(" OrderClose OP_SELL Error N",GetLastError());
+
+              }
+  }
+//+------------------------------------------------------------------+
+double CalcLot(int TypeOrder)
+  {
+   double rezult=0;
+   switch(TypeLot)
+     {
+      case 0: // Standart lot
+         if(TypeOrder==OP_BUY || TypeOrder==OP_SELL)rezult=iStartLots;
+         break;
+
+      case 1: // Summ lot
+         if(TypeOrder==OP_BUY && Ask < BuyMinPrice  ) rezult=BuyMinLot+iStartLots;
+         if(TypeOrder==OP_BUY && Ask > BuyMaxPrice  ) rezult=iStartLots;
+
+         if(TypeOrder==OP_SELL&& Bid > SellMaxPrice ) rezult=SellMaxLot+iStartLots;
+         if(TypeOrder==OP_SELL&& Bid < SellMinPrice ) rezult=iStartLots;
+         break;
+
+      case 2: // Martingale lot
+         if(TypeOrder==OP_BUY && Ask < BuyMinPrice  ) rezult=BuyMinLot*iMultiplier;
+         if(TypeOrder==OP_BUY && Ask > BuyMaxPrice  ) rezult=iStartLots;
+
+         if(TypeOrder==OP_SELL&& Bid > SellMaxPrice ) rezult=SellMaxLot*iMultiplier;
+         if(TypeOrder==OP_SELL&& Bid < SellMinPrice ) rezult=iStartLots;
+         break;
+
+      case 3: // Step lot
+         if(TypeOrder==OP_BUY && Ask < BuyMinPrice && b%3==0 ) rezult=BuyMinLot+iStartLots;
+         if(TypeOrder==OP_BUY && Ask > BuyMaxPrice  ) rezult=iStartLots;
+
+         if(TypeOrder==OP_SELL&& Bid > SellMaxPrice && s%3==0) rezult=SellMaxLot+iStartLots;
+         if(TypeOrder==OP_SELL&& Bid < SellMinPrice ) rezult=iStartLots;
+         break;
+     }
+   return rezult;
+  }
+//+------------------------------------------------------------------+
